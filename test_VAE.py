@@ -50,12 +50,9 @@ def loss_func(encoder_mu, encoder_log_variance):
         return loss
     return vae_loss
 
-#pd_variables = ['deltaetajj', 'deltaphijj', 'etaj1', 'etaj2', 'etal1', 'etal2',
-#       'met', 'mjj', 'mll', 'phij1', 'phij2', 'ptj1', 'ptj2', 'ptl1',
-#       'ptl2', 'ptll', 'w']
 pd_variables = ['deltaetajj', 'deltaphijj', 'etaj1', 'etaj2', 'etal1', 'etal2',
-                'met', 'mjj', 'mll', 'phij1', 'phij2', 'ptj1', 'ptj2', 'ptl1',
-                'ptl2', 'ptll', 'w']
+       'met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
+       'ptl2', 'ptll']#,'phij1', 'phij2', 'w']
 df = ROOT.RDataFrame("SSWW_SM","../ntuple_SSWW_SM.root")
 dfBSM = ROOT.RDataFrame("SSWW_cW_QU","../ntuple_SSWW_cW_QU.root")
 dfBSM2 = ROOT.RDataFrame("SSWW_cHW_QU","../ntuple_SSWW_cHW_QU.root")

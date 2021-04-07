@@ -17,14 +17,13 @@ from sklearn.metrics import accuracy_score
 from matplotlib import pyplot
 
 ROOT.ROOT.EnableImplicitMT()
-
-
 pd_variables = ['deltaetajj', 'deltaphijj', 'etaj1', 'etaj2', 'etal1', 'etal2',
-       'met', 'mjj', 'mll', 'phij1', 'phij2', 'ptj1', 'ptj2', 'ptl1',
-       'ptl2', 'ptll', 'w']
-df = ROOT.RDataFrame("SSWW_SM","./ntuple_SSWW_SM.root")
-dfBSM = ROOT.RDataFrame("SSWW_cW_QU","./ntuple_SSWW_cW_QU.root")
-dfBSM2 = ROOT.RDataFrame("SSWW_cHW_QU","ntuple_SSWW_cHW_QU.root")
+       'met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
+       'ptl2', 'ptll']#,'phij1', 'phij2', 'w']
+
+df = ROOT.RDataFrame("SSWW_SM","../ntuple_SSWW_SM.root")
+dfBSM = ROOT.RDataFrame("SSWW_cW_QU","../ntuple_SSWW_cW_QU.root")
+dfBSM2 = ROOT.RDataFrame("SSWW_cHW_QU","../ntuple_SSWW_cHW_QU.root")
 
 npy = df.AsNumpy(pd_variables)
 npd =pd.DataFrame.from_dict(npy)
@@ -45,9 +44,9 @@ npdBSM2 =pd.DataFrame.from_dict(npyBSM2)
 nEntries = 200000
 npd = npd.head(nEntries)
 npdBSM = npdBSM.head(nEntries)
-npdBSM2 = npdBSM.head(nEntries)
+npdBSM2 = npdBSM2.head(nEntries)
 
-print npd.columns
+#print npd.columns
 #print npdBSM.columns
 
 """
@@ -59,7 +58,6 @@ for j in range(6,9):
 #print npd_discr
 """
 
-#X_train, X_test, y_train, y_test = train_test_split(npd, npd["mll"], test_size=0.33, random_state=1)
 X_train, X_test, y_train, y_test = train_test_split(npd, npd, test_size=0.33, random_state=1)
 n_inputs = npd.shape[1]
 # scale data
@@ -87,12 +85,12 @@ bottleneck = Dense(n_bottleneck)(e)
 
 # define decoder, level 1
 d = Dense(n_inputs)(bottleneck)
-e = Dropout(0.2)(e)
+#e = Dropout(0.2)(e)
 d = BatchNormalization()(d)
 d = LeakyReLU()(d)
 # decoder level 2
 d = Dense(n_inputs*2)(d)
-e = Dropout(0.2)(e)
+#e = Dropout(0.2)(e)
 d = BatchNormalization()(d)
 d = LeakyReLU()(d)
 # output layer
@@ -104,9 +102,10 @@ model.summary()
 # compile autoencoder model
 model.compile(optimizer='adam', loss='mse')
 # plot the autoencoder
-plot_model(model, 'autoencoder_no_compress.png', show_shapes=True)
+#plot_model(model, 'autoencoder_no_compress.png', show_shapes=True)
 # fit the autoencoder model to reconstruct input
-history = model.fit(X_train, X_train, epochs=100, batch_size=16, verbose=1, validation_data=(X_test,X_test))
+#history = model.fit(X_train, X_train, epochs=100,  shuffle=True, batch_size=16, verbose=1, validation_data=(X_test,X_test))
+history = model.fit(X_train, X_train, epochs=20, batch_size=16, verbose=1, validation_data=(X_test,X_test))
 pyplot.plot(history.history['loss'], label='train')
 pyplot.plot(history.history['val_loss'], label='test')
 pyplot.legend()
@@ -118,9 +117,9 @@ pyplot.legend()
 model.save('autoencoder.h5')
 
 results = model.evaluate(X_test, X_test, batch_size=128)
-print("test loss, test acc:", results)
+print("test loss, test acc:", results/float(X_test.shape[0]))
 
-t.fit(npdBSM)
+#t.fit(npdBSM)
 npdBSM = t.transform(npdBSM)
 results = model.evaluate(npdBSM, npdBSM, batch_size=128)
 print("test loss, test acc:", results)
