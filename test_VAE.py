@@ -28,7 +28,7 @@ def sampling(mu_log_variance):
 
 def loss_func(encoder_mu, encoder_log_variance):
     def vae_reconstruction_loss(y_true, y_predict):
-        reconstruction_loss_factor = 1/1000.
+        reconstruction_loss_factor = 10000.
         #reconstruction_loss = tf.keras.backend.mean(tf.keras.backend.square(y_true-y_predict), axis=[1, 2, 3])
         reconstruction_loss = tf.keras.backend.mean(tf.keras.backend.square(y_true-y_predict))
         return reconstruction_loss_factor * reconstruction_loss
@@ -74,7 +74,7 @@ npdBSM2 =pd.DataFrame.from_dict(npyBSM2)
 #npd = npd[(npd["ptj1"] > 200)]
 #npdBSM = npdBSM[(npdBSM["ptj1"] > 200)]
 nEntries = 200000
-npd = npd.head(nEntries)
+npd = npd.head(nEntries*2)
 npdBSM = npdBSM.head(nEntries)
 npdBSM2 = npdBSM2.head(nEntries)
 
@@ -131,7 +131,7 @@ encoder_flatten = tf.keras.layers.Flatten()(encoder_activ_layer5)
 #Up to here we could have used the AE of the other example ....
 #now we make the "variational part", i.e. we create the Normal distribution mu and sigma:
 #latent_space_dim = round(float(n_inputs)/3.)
-latent_space_dim = 2
+latent_space_dim = 4
 encoder_mu = Dense(units=latent_space_dim, name="encoder_mu")(encoder_flatten)
 encoder_log_variance = Dense(units=latent_space_dim, name="encoder_log_variance")(encoder_flatten)
 
@@ -178,16 +178,17 @@ vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005),  loss=loss_func(encod
 
 
 #vae.fit(X_train, X_train, epochs=100, batch_size=16, shuffle=True, validation_data=(X_test, X_test))
-vae.fit(X_train, X_train, epochs=20, batch_size=16, validation_data=(X_test, X_test))
-encoded_data = encoder.predict(X_test)
-decoded_data = decoder.predict(encoded_data)
-results = vae.evaluate(X_test, X_test, batch_size=128)
+vae.fit(X_train, X_train, epochs=100, batch_size=32, validation_data=(X_test, X_test))
+vae.save('vae_denselayers_4Dim.h5')
+#encoded_data = encoder.predict(X_test)
+#decoded_data = decoder.predict(encoded_data)
+results = vae.evaluate(X_test, X_test, batch_size=32)
 print("test loss, test acc:", results)
 #t.fit(npdBSM)
 npdBSM = t.transform(npdBSM)
-results = vae.evaluate(npdBSM, npdBSM, batch_size=128)
+results = vae.evaluate(npdBSM, npdBSM, batch_size=32)
 print("test loss, test acc:", results)
 #t.fit(npdBSM2)
 npdBSM2 = t.transform(npdBSM2)
-results = vae.evaluate(npdBSM2, npdBSM2, batch_size=128)
+results = vae.evaluate(npdBSM2, npdBSM2, batch_size=32)
 print("BSM2 loss, BSM2 acc:", results)
