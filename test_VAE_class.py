@@ -34,8 +34,10 @@ class Encoder(layers.Layer):
         self.encoder_active_layer2 = layers.LeakyReLU(name="encoder_activ_layer_2")
         self.encoder_layer3 = layers.Dense(input_dim)
         self.encoder_active_layer3 = layers.LeakyReLU(name="encoder_activ_layer_3")    
-        self.encoder_mu = layers.Dense(units=latent_dim, name="encoder_mu")
-        self.encoder_log_variance = layers.Dense(units=latent_dim, name="encoder_log_variance")
+        self.encoder_layer4 = layers.Dense(input_dim)
+        self.encoder_active_layer4 = layers.LeakyReLU(name="encoder_activ_layer_4")    
+        self.encoder_layer5 = layers.Dense(input_dim) #to be 1/2
+        self.encoder_active_layer5 = layers.LeakyReLU(name="encoder_activ_layer_5")
         self.dense_mean = layers.Dense(latent_dim)
         self.dense_log_var = layers.Dense(latent_dim)
         self.sampling = sampling()
@@ -47,8 +49,12 @@ class Encoder(layers.Layer):
         xl2_active = self.encoder_active_layer2(xl2)
         xl3 = self.encoder_layer3(xl2_active)
         xl3_active = self.encoder_active_layer3(xl3)
-        z_mean = self.encoder_mu(xl3_active)
-        z_log_var = self.dense_log_var(xl3_active)
+        xl4=self.encoder_layer4(xl3_active)
+        xl4_active=self.encoder_active_layer4(xl4)
+        xl5=self.encoder_layer5(xl4_active)
+        xl5_active=self.encoder_active_layer5(xl5)
+        z_mean = self.dense_mean(xl5_active)
+        z_log_var = self.dense_log_var(xl5_active)
         z = self.sampling((z_mean, z_log_var))
         return z_mean, z_log_var, z
 
@@ -63,11 +69,14 @@ class Decoder(layers.Layer):
         super(Decoder, self).__init__(name=name, **kwargs)
         self.decoder_layer1 = layers.Dense(latent_dim)
         self.decoder_active_layer1 = layers.LeakyReLU(name="decoder_leakyrelu_1")
-        self.decoder_layer2 = layers.Dense(original_dim)    
+        self.decoder_layer2 = layers.Dense(original_dim)    #to be 1/2
         self.decoder_active_layer2 = layers.LeakyReLU(name="decoder_leakyrelu_2")    
         self.decoder_layer3 = layers.Dense(original_dim)
         self.decoder_active_layer3 = layers.LeakyReLU(name="decoder_leakyrelu_3")
-        self.dense_output = layers.Dense(original_dim, activation='sigmoid')
+        self.decoder_layer4 = layers.Dense(original_dim)
+        self.decoder_active_layer4 = layers.LeakyReLU(name="decoder_leakyrelu_4")
+        self.dense_output = layers.Dense(original_dim)
+        self.decoder_active_output = layers.LeakyReLU(name="decoder_leakyrelu_output")
 
     def call(self, inputs):
         layer1 = self.decoder_layer1(inputs)
@@ -76,7 +85,10 @@ class Decoder(layers.Layer):
         active_layer2=self.decoder_active_layer2(layer2)
         layer3=self.decoder_layer3(active_layer2)
         active_layer3=self.decoder_active_layer3(layer3)
-        return self.dense_output(active_layer3)
+        layer4=self.decoder_layer3(active_layer3)
+        active_layer4=self.decoder_active_layer4(layer4)
+        output =self.dense_output(active_layer4)
+        return self.decoder_active_output(output)
 
 class VariationalAutoEncoder(tf.keras.Model):
     """Combines the encoder and decoder into an end-to-end model for training."""
@@ -100,7 +112,7 @@ class VariationalAutoEncoder(tf.keras.Model):
         # Add KL divergence regularization loss.
         kl_loss = - 0.5 * tf.reduce_mean(
             z_log_var - tf.square(z_mean) - tf.exp(z_log_var) + 1)
-        kl_loss= kl_loss
+        kl_loss= kl_loss/10000.
         self.add_loss(kl_loss)
         return reconstructed
 
@@ -153,20 +165,19 @@ X_test = t.transform(X_test)
 n_inputs = npd.shape[1]
 original_dim = n_inputs
 vae = VariationalAutoEncoder(original_dim, 2*original_dim, 4)  #, input_shape=(784,)
-
-vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005),  loss=tf.keras.losses.MeanSquaredError() )
+vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005),  loss=tf.keras.losses.MeanSquaredError())
 
 #vae.fit([X_train, X_train,wx], epochs=100, validation_data=(X_test,X_test),use_multiprocessing=True)
 #vae.fit(X_train,X_train, epochs=30,sample_weight=wx, batch_size = 32)
-vae.fit(X_train,X_train, epochs=1,sample_weight=wx, batch_size = 32)
+vae.fit(X_train,X_train, epochs=20,sample_weight=wx, batch_size = 32)
 encoder = LatentSpace(original_dim, 2*original_dim, 4)
 
 z = encoder.predict(X_train)
-print z
+#print z
 #vae.save('vae_denselayers_4Dim_withWeights')
 tf.keras.models.save_model(encoder,'encoder_test')
 tf.keras.models.save_model(vae,'vae_denselayers_4Dim_withWeights')
 #encoded_data = encoder.predict(X_test)
 #decoded_data = decoder.predict(encoded_data)
-results = vae.evaluate(X_test, X_test, batch_size=32,sample_weight=wxtest)
-print("test loss, test acc:", results)
+#results = vae.evaluate(X_test, X_test, batch_size=32,sample_weight=wxtest)
+#print("test loss, test acc:", results)
