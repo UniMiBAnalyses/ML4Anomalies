@@ -17,10 +17,10 @@ class LossPerBatch(tf.keras.callbacks.Callback):
     def on_predict_begin(self, logs=None):
         keys = list(logs.keys())
         self.eval_loss = []
-        print("Start predicting; got log keys: {}".format(keys))
+        #print("Start predicting; got log keys: {}".format(keys))
 
     def on_test_batch_end(self, batch, logs=None):
-        print("For batch {}, loss is {:7.10f}.".format(batch, logs["loss"]))
+        #print("For batch {}, loss is {:7.10f}.".format(batch, logs["loss"]))
         self.eval_loss.append(logs["loss"])
 
     def on_epoch_end(self, epoch, logs=None):
