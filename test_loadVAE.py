@@ -9,6 +9,28 @@ from sklearn.metrics import accuracy_score
 from matplotlib import pyplot as plt
 ROOT.ROOT.EnableImplicitMT()
 
+#myloss = []
+
+class LossPerBatch(tf.keras.callbacks.Callback):
+    def __init__(self,**kwargs):
+        self.eval_loss = []
+    def on_predict_begin(self, logs=None):
+        keys = list(logs.keys())
+        self.eval_loss = []
+        print("Start predicting; got log keys: {}".format(keys))
+
+    def on_test_batch_end(self, batch, logs=None):
+        print("For batch {}, loss is {:7.10f}.".format(batch, logs["loss"]))
+        self.eval_loss.append(logs["loss"])
+
+    def on_epoch_end(self, epoch, logs=None):
+        print(
+            "The average loss for epoch {} is {:7.2f} "
+            "and mean absolute error is {:7.2f}.".format(
+                epoch, logs["loss"], logs["mean_absolute_error"]
+            )
+        )
+
 
 pd_variables = ['deltaetajj', 'deltaphijj', 'etaj1', 'etaj2', 'etal1', 'etal2',
        'met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
@@ -68,39 +90,52 @@ npdBSM = t.transform(npdBSM)
 npdBSM2 = t.transform(npdBSM2)
 
 
-
+mylosses = LossPerBatch()
 model = tf.keras.models.load_model('vae_denselayers_4Dim_withWeights')
-model.evaluate(X_test, X_test, batch_size=32,sample_weight=wxtest)
-model.evaluate(npdBSM, npdBSM, batch_size=32,sample_weight=wBSM)
-model.evaluate(npdBSM2, npdBSM2, batch_size=32,sample_weight=wBSM2)
+model.evaluate(X_test,X_test,batch_size=5,callbacks=[mylosses],verbose=0,sample_weight=wxtest)
+
+mylosses_BSM = LossPerBatch()
+model.evaluate(npdBSM, npdBSM, batch_size=5,sample_weight=wBSM,callbacks=[mylosses_BSM],verbose=0)
+mylosses_BSM2 = LossPerBatch()
+model.evaluate(npdBSM2, npdBSM2, batch_size=5,sample_weight=wBSM2,callbacks=[mylosses_BSM2],verbose=0)
+#model.evaluate(npdBSM2, npdBSM2, batch_size=32,sample_weight=wBSM2)
 encoder=tf.keras.models.load_model('encoder_test')
+myloss = mylosses.eval_loss
+myloss_BSM = mylosses_BSM.eval_loss
+myloss_BSM2 = mylosses_BSM2.eval_loss
+plt.hist(myloss,bins=100,range=(0.,0.00015),histtype="step",color="blue",alpha=1.)
+plt.hist(myloss_BSM,bins=100,range=(0.,0.00015),histtype="step",color="red",alpha=1.)
+plt.hist(myloss_BSM2,bins=100,range=(0.,0.00015),histtype="step",color="red",alpha=1.)
+plt.show()
+
+
 
 encodedBSM = encoder.predict(npdBSM)
 encodedBSM2 = encoder.predict(npdBSM2)
-encodedTest = encode.predict(X_test)
+encodedTest = encoder.predict(X_test)
 
 fig, ((ax0, ax1,ax2)) = plt.subplots(nrows=3, ncols=1)
 
-ax0.hist(encodedBSM[0:,0],bins=100,range=(-40.,40.),histtype="step",weights=wBSM,color="red",alpha=1.)
-ax0.hist(encodedBSM[0:,1],bins=100,range=(-40.,40.),histtype="step",weights=wBSM,color="blue",alpha=1.)
-ax0.hist(encodedBSM[0:,2],bins=100,range=(-40.,40.),histtype="step",weights=wBSM,color="green",alpha=1.)
-ax0.hist(encodedBSM[0:,3],bins=100,range=(-40.,40.),histtype="step",weights=wBSM,color="black",alpha=1.)
+ax0.hist(encodedBSM[0:,0],bins=100,range=(-5.,5.),histtype="step",weights=wBSM,color="red",alpha=1.)
+ax0.hist(encodedBSM[0:,1],bins=100,range=(-5.,5.),histtype="step",weights=wBSM,color="blue",alpha=1.)
+ax0.hist(encodedBSM[0:,2],bins=100,range=(-5.,5.),histtype="step",weights=wBSM,color="green",alpha=1.)
+ax0.hist(encodedBSM[0:,3],bins=100,range=(-5.,5.),histtype="step",weights=wBSM,color="black",alpha=1.)
 ax0.set_title('BSM1')
 ax0.patch.set_facecolor("w")
 fig.patch.set_facecolor("w")
 
-ax1.hist(encodedBSM2[0:,0],bins=100,range=(-40.,40.),histtype="step",weights=wBSM2,color="red",alpha=1.)
-ax1.hist(encodedBSM2[0:,1],bins=100,range=(-40.,40.),histtype="step",weights=wBSM2,color="blue",alpha=1.)
-ax1.hist(encodedBSM2[0:,2],bins=100,range=(-40.,40.),histtype="step",weights=wBSM2,color="green",alpha=1.)
-ax1.hist(encodedBSM2[0:,3],bins=100,range=(-40.,40.),histtype="step",weights=wBSM2,color="black",alpha=1.)
+ax1.hist(encodedBSM2[0:,0],bins=100,range=(-5.,5.),histtype="step",weights=wBSM2,color="red",alpha=1.)
+ax1.hist(encodedBSM2[0:,1],bins=100,range=(-5.,5.),histtype="step",weights=wBSM2,color="blue",alpha=1.)
+ax1.hist(encodedBSM2[0:,2],bins=100,range=(-5.,5.),histtype="step",weights=wBSM2,color="green",alpha=1.)
+ax1.hist(encodedBSM2[0:,3],bins=100,range=(-5.,5.),histtype="step",weights=wBSM2,color="black",alpha=1.)
 ax1.patch.set_facecolor("w")
 fig.patch.set_facecolor("w")
 ax1.set_title('BSM2')
 
-ax2.hist(encodedTest[0:,0],bins=100,range=(-40.,40.),histtype="step",weights=wxtest,color="red",alpha=1.)
-ax2.hist(encodedTest[0:,1],bins=100,range=(-40.,40.),histtype="step",weights=wxtest,color="blue",alpha=1.)
-ax2.hist(encodedTest[0:,2],bins=100,range=(-40.,40.),histtype="step",weights=wxtest,color="green",alpha=1.)
-ax2.hist(encodedTest[0:,3],bins=100,range=(-40.,40.),histtype="step",weights=wxtest,color="black",alpha=1.)
+ax2.hist(encodedTest[0:,0],bins=100,range=(-5.,5.),histtype="step",weights=wxtest,color="red",alpha=1.)
+ax2.hist(encodedTest[0:,1],bins=100,range=(-5.,5.),histtype="step",weights=wxtest,color="blue",alpha=1.)
+ax2.hist(encodedTest[0:,2],bins=100,range=(-5.,5.),histtype="step",weights=wxtest,color="green",alpha=1.)
+ax2.hist(encodedTest[0:,3],bins=100,range=(-5.,5.),histtype="step",weights=wxtest,color="black",alpha=1.)
 ax2.set_title("SM")
 
 #plt.scatter(encodedBSM2[0:,0],encodedBSM2[0:,1],c="green")

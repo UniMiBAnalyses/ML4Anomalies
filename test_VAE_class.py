@@ -9,6 +9,7 @@ from tensorflow.keras import layers
 
 ROOT.ROOT.EnableImplicitMT()
 
+
 class sampling(layers.Layer):
     """Uses (z_mean, z_log_var) to sample z, the vector encoding the variables."""
     def call(self, inputs):
@@ -112,7 +113,7 @@ class VariationalAutoEncoder(tf.keras.Model):
         # Add KL divergence regularization loss.
         kl_loss = - 0.5 * tf.reduce_mean(
             z_log_var - tf.square(z_mean) - tf.exp(z_log_var) + 1)
-        kl_loss= kl_loss/10000.
+        kl_loss= kl_loss/1000000.
         self.add_loss(kl_loss)
         return reconstructed
 
@@ -164,13 +165,14 @@ X_test = t.transform(X_test)
 
 n_inputs = npd.shape[1]
 original_dim = n_inputs
-vae = VariationalAutoEncoder(original_dim, 2*original_dim, 4)  #, input_shape=(784,)
+vae = VariationalAutoEncoder(original_dim, 2*original_dim, 6)  
 vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005),  loss=tf.keras.losses.MeanSquaredError())
+#vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005),  loss=tf.keras.losses.BinaryCrossentropy()) # it gives worse separation between signal and SM, no good for VAE
 
 #vae.fit([X_train, X_train,wx], epochs=100, validation_data=(X_test,X_test),use_multiprocessing=True)
 #vae.fit(X_train,X_train, epochs=30,sample_weight=wx, batch_size = 32)
 vae.fit(X_train,X_train, epochs=20,sample_weight=wx, batch_size = 32)
-encoder = LatentSpace(original_dim, 2*original_dim, 4)
+encoder = LatentSpace(original_dim, 2*original_dim, 6)
 
 z = encoder.predict(X_train)
 #print z
