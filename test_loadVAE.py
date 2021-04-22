@@ -92,12 +92,12 @@ npdBSM2 = t.transform(npdBSM2)
 
 mylosses = LossPerBatch()
 model = tf.keras.models.load_model('vae_denselayers_4Dim_withWeights')
-model.evaluate(X_test,X_test,batch_size=5,callbacks=[mylosses],verbose=0,sample_weight=wxtest)
+model.evaluate(X_test,X_test,batch_size=1,callbacks=[mylosses],verbose=0,sample_weight=wxtest)
 
 mylosses_BSM = LossPerBatch()
-model.evaluate(npdBSM, npdBSM, batch_size=5,sample_weight=wBSM,callbacks=[mylosses_BSM],verbose=0)
+model.evaluate(npdBSM, npdBSM, batch_size=1,sample_weight=wBSM,callbacks=[mylosses_BSM],verbose=0)
 mylosses_BSM2 = LossPerBatch()
-model.evaluate(npdBSM2, npdBSM2, batch_size=5,sample_weight=wBSM2,callbacks=[mylosses_BSM2],verbose=0)
+model.evaluate(npdBSM2, npdBSM2, batch_size=1,sample_weight=wBSM2,callbacks=[mylosses_BSM2],verbose=0)
 #model.evaluate(npdBSM2, npdBSM2, batch_size=32,sample_weight=wBSM2)
 encoder=tf.keras.models.load_model('encoder_test')
 myloss = mylosses.eval_loss
@@ -105,7 +105,7 @@ myloss_BSM = mylosses_BSM.eval_loss
 myloss_BSM2 = mylosses_BSM2.eval_loss
 plt.hist(myloss,bins=100,range=(0.,0.00015),histtype="step",color="blue",alpha=1.)
 plt.hist(myloss_BSM,bins=100,range=(0.,0.00015),histtype="step",color="red",alpha=1.)
-plt.hist(myloss_BSM2,bins=100,range=(0.,0.00015),histtype="step",color="red",alpha=1.)
+plt.hist(myloss_BSM2,bins=100,range=(0.,0.00015),histtype="step",color="green",alpha=1.)
 plt.show()
 
 
