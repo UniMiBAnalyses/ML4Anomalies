@@ -26,6 +26,7 @@ class Encoder(layers.Layer):
                latent_dim=4,
                intermediate_dim=28,
                input_dim=14,
+               half_input=7,
                name='encoder',
                **kwargs):
         super(Encoder, self).__init__(name=name, **kwargs)                       
@@ -37,7 +38,8 @@ class Encoder(layers.Layer):
         self.encoder_active_layer3 = layers.LeakyReLU(name="encoder_activ_layer_3")    
         self.encoder_layer4 = layers.Dense(input_dim)
         self.encoder_active_layer4 = layers.LeakyReLU(name="encoder_activ_layer_4")    
-        self.encoder_layer5 = layers.Dense(input_dim) #to be 1/2
+        #self.encoder_layer5 = layers.Dense(input_dim) #to be 1/2
+        self.encoder_layer5 = layers.Dense(half_input) 
         self.encoder_active_layer5 = layers.LeakyReLU(name="encoder_activ_layer_5")
         self.dense_mean = layers.Dense(latent_dim)
         self.dense_log_var = layers.Dense(latent_dim)
@@ -64,17 +66,19 @@ class Decoder(layers.Layer):
 
     def __init__(self,
             original_dim,
-            latent_dim=4,               
+            latent_dim=4,  
+            half_input=7,             
                name='decoder',
                **kwargs):
         super(Decoder, self).__init__(name=name, **kwargs)
         self.decoder_layer1 = layers.Dense(latent_dim)
         self.decoder_active_layer1 = layers.LeakyReLU(name="decoder_leakyrelu_1")
-        self.decoder_layer2 = layers.Dense(original_dim)    #to be 1/2
+        self.decoder_layer2 = layers.Dense(original_dim)    #to be 1/2        
         self.decoder_active_layer2 = layers.LeakyReLU(name="decoder_leakyrelu_2")    
         self.decoder_layer3 = layers.Dense(original_dim)
         self.decoder_active_layer3 = layers.LeakyReLU(name="decoder_leakyrelu_3")
-        self.decoder_layer4 = layers.Dense(original_dim)
+        #self.decoder_layer4 = layers.Dense(original_dim)
+        self.decoder_layer4 = layers.Dense(half_input)
         self.decoder_active_layer4 = layers.LeakyReLU(name="decoder_leakyrelu_4")
         self.dense_output = layers.Dense(original_dim)
         self.decoder_active_output = layers.LeakyReLU(name="decoder_leakyrelu_output")
@@ -98,13 +102,14 @@ class VariationalAutoEncoder(tf.keras.Model):
                original_dim,
                intermediate_dim,
                latent_dim=4,
+               half_input=7,
                name='autoencoder',
                **kwargs):
         super(VariationalAutoEncoder, self).__init__(name=name, **kwargs)
         self.original_dim = original_dim
         self.encoder = Encoder(latent_dim=latent_dim,
-                            intermediate_dim=intermediate_dim,input_dim=original_dim)
-        self.decoder = Decoder(original_dim, latent_dim)
+                            intermediate_dim=intermediate_dim,input_dim=original_dim,half_input=half_input)
+        self.decoder = Decoder(original_dim, latent_dim,half_input=half_input)
 
     def call(self, inputs):
         # self._set_inputs(inputs)
@@ -125,19 +130,22 @@ class LatentSpace(tf.keras.Model):
                original_dim,
                intermediate_dim,
                latent_dim=4,
+               half_input=7,
                name='latentspace',
                **kwargs):
         super(LatentSpace, self).__init__(name=name, **kwargs)
         self.original_dim = original_dim
         self.encoder = Encoder(latent_dim=latent_dim,
-                            intermediate_dim=intermediate_dim,input_dim=original_dim)
+                            intermediate_dim=intermediate_dim,input_dim=original_dim,half_input=half_input)
 
     def call(self, inputs):
         # self._set_inputs(inputs)
         z_mean, z_log_var, z = self.encoder(inputs)
         return z
 
-
+#
+# variable from the nutple
+#
 pd_variables = ['deltaetajj', 'deltaphijj', 'etaj1', 'etaj2', 'etal1', 'etal2',
        'met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
        'ptl2', 'ptll']#,'phij1', 'phij2', 'w']
@@ -148,7 +156,7 @@ npy = df.AsNumpy(pd_variables)
 wSM = df.AsNumpy("w")
 npd =pd.DataFrame.from_dict(npy)
 wpdSM = pd.DataFrame.from_dict(wSM)
-nEntries = 400000
+nEntries = 1000000
 npd = npd.head(nEntries*2)
 wpdSM = wpdSM.head(nEntries*2)
 
@@ -165,20 +173,22 @@ X_test = t.transform(X_test)
 
 n_inputs = npd.shape[1]
 original_dim = n_inputs
-vae = VariationalAutoEncoder(original_dim, 2*original_dim, 6)  
+latent_dim = 6
+intermediate_dim = 7
+vae = VariationalAutoEncoder(original_dim, 2*original_dim, latent_dim,intermediate_dim)  
 vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005),  loss=tf.keras.losses.MeanSquaredError())
 #vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005),  loss=tf.keras.losses.BinaryCrossentropy()) # it gives worse separation between signal and SM, no good for VAE
 
 #vae.fit([X_train, X_train,wx], epochs=100, validation_data=(X_test,X_test),use_multiprocessing=True)
 #vae.fit(X_train,X_train, epochs=30,sample_weight=wx, batch_size = 32)
-vae.fit(X_train,X_train, epochs=20,sample_weight=wx, batch_size = 32)
-encoder = LatentSpace(original_dim, 2*original_dim, 6)
+vae.fit(X_train,X_train, epochs=200,sample_weight=wx, batch_size = 16)
+encoder = LatentSpace(original_dim, 2*original_dim, latent_dim, intermediate_dim)
 
 z = encoder.predict(X_train)
 #print z
 #vae.save('vae_denselayers_4Dim_withWeights')
-tf.keras.models.save_model(encoder,'encoder_test')
-tf.keras.models.save_model(vae,'vae_denselayers_4Dim_withWeights')
+tf.keras.models.save_model(encoder,'encoder_6_latentDim')
+tf.keras.models.save_model(vae,'vae_denselayers_withWeights_6_latentDim_100epoch')
 #encoded_data = encoder.predict(X_test)
 #decoded_data = decoder.predict(encoded_data)
 #results = vae.evaluate(X_test, X_test, batch_size=32,sample_weight=wxtest)

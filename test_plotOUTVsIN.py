@@ -36,7 +36,7 @@ pd_variables = ['deltaetajj', 'deltaphijj', 'etaj1', 'etaj2', 'etal1', 'etal2',
        'ptl2', 'ptll']#,'phij1', 'phij2', 'w']
 df = ROOT.RDataFrame("SSWW_SM","../ntuple_SSWW_SM.root")
 dfBSM = ROOT.RDataFrame("SSWW_cW_QU","../ntuple_SSWW_cW_QU.root")
-dfBSM2 = ROOT.RDataFrame("SSWW_cHW_QU","../ntuple_SSWW_cHW_QU.root")
+
 
 npy = df.AsNumpy(pd_variables)
 npd =pd.DataFrame.from_dict(npy)
@@ -51,25 +51,11 @@ npdBSM =pd.DataFrame.from_dict(npyBSM)
 npywBSM = dfBSM.AsNumpy("w")
 npdwBSM = pd.DataFrame.from_dict(npywBSM)
 
-npyBSM2 = dfBSM2.AsNumpy(pd_variables)
-npdBSM2 =pd.DataFrame.from_dict(npyBSM2)
-npywBSM2 = dfBSM2.AsNumpy("w")
-npdwBSM2 = pd.DataFrame.from_dict(npywBSM2)
-
-
-#print npd
-
-#Just reducing a bit the sample
-#npd = npd[(npd["ptj1"] > 200)]
-#npdBSM = npdBSM[(npdBSM["ptj1"] > 200)]
 nEntries = 400000
 npd = npd.head(nEntries)
 npdBSM = npdBSM.head(int(round(nEntries*0.2)))
-npdBSM2 = npdBSM2.head(int(round(nEntries*0.2)))
 npdwBSM = npdwBSM.head(int(round(nEntries*0.2)))
-npdwBSM2 = npdwBSM2.head(int(round(nEntries*0.2)))
 wBSM = npdwBSM["w"].to_numpy()
-wBSM2 = npdwBSM2["w"].to_numpy()
 wpdSM = wpdSM.head(nEntries)
 
 #print npd.columns
@@ -83,39 +69,40 @@ n_inputs = npd.shape[1]
 # scale data
 t = MinMaxScaler()
 t.fit(X_train)
-X_train = t.transform(X_train)
+#X_train = t.transform(X_train)
 X_test = t.transform(X_test)
-npdBSM = t.transform(npdBSM)
-npdBSM2 = t.transform(npdBSM2)
-
-
-mylosses = LossPerBatch()
+#npdBSM = t.transform(npdBSM)
 model = tf.keras.models.load_model('vae_denselayers_withWeights_6_latentDim_100epoch')
-model.evaluate(X_test,X_test,batch_size=1,callbacks=[mylosses],verbose=0,sample_weight=wxtest)
-
-mylosses_BSM = LossPerBatch()
-model.evaluate(npdBSM, npdBSM, batch_size=1,sample_weight=wBSM,callbacks=[mylosses_BSM],verbose=0)
-#mylosses_BSM2 = LossPerBatch()
-#model.evaluate(npdBSM2, npdBSM2, batch_size=1,sample_weight=wBSM2,callbacks=[mylosses_BSM2],verbose=0)
-#encoder=tf.keras.models.load_model('encoder_test')
-myloss = mylosses.eval_loss
-myloss_BSM = mylosses_BSM.eval_loss
-np.savetxt("lossSM.csv", myloss,delimiter=',')
-np.savetxt("lossBSM.csv", myloss_BSM,delimiter=',')
-
-#print myloss_BSM
-#myloss_BSM2 = mylosses_BSM2.eval_loss
+#model = tf.keras.models.load_model('vae_denselayers_4Dim_withWeights')
+out = model.predict(X_test)
+#print out[0:,0]
+#print X_test[0:,0]
+#diff = []
+#for i in range(len(X_test[0:,0])):
+#    diff.append(out[i,0]-X_test[i,0])
+#setting up plots    
 ax = plt.figure(figsize=(7,5), dpi=100).add_subplot(111)
 ax.xaxis.grid(True, which="major")
 ax.yaxis.grid(True, which="major")
 ax.set_ylim(ymax=2000)
-ax.hist(myloss,bins=1000,range=(0.,0.0005),histtype="step",color="blue",alpha=1.)
-ax.hist(myloss_BSM,bins=1000,range=(0.,0.0005),histtype="step",color="red",alpha=1.)
-#plt.hist(myloss_BSM2,bins=100,range=(0.,0.00015),histtype="step",color="green",alpha=1.)
-plt.show()
-ax.patch.set_facecolor("w")
-fig.patch.set_facecolor("w")
+fig, axes = plt.subplots(nrows=4,ncols=4)
+nvar = 0
+nrows = 4
+ncols = 4
+for i in range(nrows):
+    for j in range(ncols):
+        if nvar < len(pd_variables):
+            axes[i][j].hist(X_test[0:,nvar],bins=500,histtype="step",color="blue",alpha=1.)
+            axes[i][j].set_xlabel(pd_variables[nvar])
+        
+            axes[i][j].hist(out[0:,nvar],bins=500,histtype="step",color="red",alpha=1.)
+            nvar= nvar+1
+            axes[i][j].patch.set_facecolor("w")
 
+
+plt.show()
+#fig.patch.set_facecolor("w")
+""" 
 #
 # TO ADD: plot output distributions
 #
@@ -130,14 +117,14 @@ ax0.hist(encodedBSM[0:,1],bins=100,range=(-5.,5.),histtype="step",weights=wBSM,c
 ax0.hist(encodedBSM[0:,2],bins=100,range=(-5.,5.),histtype="step",weights=wBSM,color="green",alpha=1.)
 ax0.hist(encodedBSM[0:,3],bins=100,range=(-5.,5.),histtype="step",weights=wBSM,color="black",alpha=1.)
 ax0.set_title('BSM1')
-ax0.patch.set_facecolor("w")
+
 fig.patch.set_facecolor("w")
 
 ax1.hist(encodedBSM2[0:,0],bins=100,range=(-5.,5.),histtype="step",weights=wBSM2,color="red",alpha=1.)
 ax1.hist(encodedBSM2[0:,1],bins=100,range=(-5.,5.),histtype="step",weights=wBSM2,color="blue",alpha=1.)
 ax1.hist(encodedBSM2[0:,2],bins=100,range=(-5.,5.),histtype="step",weights=wBSM2,color="green",alpha=1.)
 ax1.hist(encodedBSM2[0:,3],bins=100,range=(-5.,5.),histtype="step",weights=wBSM2,color="black",alpha=1.)
-ax1.patch.set_facecolor("w")
+
 fig.patch.set_facecolor("w")
 ax1.set_title('BSM2')
 
@@ -148,7 +135,7 @@ ax2.hist(encodedTest[0:,3],bins=100,range=(-5.,5.),histtype="step",weights=wxtes
 ax2.set_title("SM")
 
 #plt.scatter(encodedBSM2[0:,0],encodedBSM2[0:,1],c="green")
-ax2.patch.set_facecolor("w")
 fig.patch.set_facecolor("w")
 
 plt.show()
+"""
