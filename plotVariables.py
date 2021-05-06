@@ -1,9 +1,8 @@
-from sklearn.model_selection import train_test_split
+#from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import ROOT
-import numpy as np
+#import numpy as np
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
 from matplotlib import pyplot as plt
 
 ROOT.ROOT.EnableImplicitMT()
@@ -18,6 +17,7 @@ dfBSM2 = ROOT.RDataFrame("SSWW_cHW_QU","../ntuple_SSWW_cHW_QU.root")
 
 npy = df.AsNumpy(pd_variables)
 npd =pd.DataFrame.from_dict(npy)
+print npd
 wSM = df.AsNumpy("w")
 wpdSM = pd.DataFrame.from_dict(wSM)
 #print npd
@@ -39,13 +39,15 @@ npdwBSM2 = pd.DataFrame.from_dict(npywBSM2)
 #Just reducing a bit the sample
 #npd = npd[(npd["ptj1"] > 200)]
 #npdBSM = npdBSM[(npdBSM["ptj1"] > 200)]
-nEntries = 200000
+nEntries = 20000000
 npd = npd.head(nEntries)
 npdBSM = npdBSM.head(nEntries)
 npdBSM2 = npdBSM2.head(nEntries)
 npdwBSM = npdwBSM.head(nEntries)
 npdwBSM2 = npdwBSM2.head(nEntries)
+print npdwBSM["w"]
 wBSM = npdwBSM["w"].to_numpy()
+print wBSM
 wBSM2 = npdwBSM2["w"].to_numpy()
 wpdSM = wpdSM.head(nEntries)
 wSM = wpdSM["w"].to_numpy()

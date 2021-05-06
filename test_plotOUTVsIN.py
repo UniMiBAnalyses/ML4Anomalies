@@ -40,6 +40,9 @@ dfBSM = ROOT.RDataFrame("SSWW_cW_QU","../ntuple_SSWW_cW_QU.root")
 
 npy = df.AsNumpy(pd_variables)
 npd =pd.DataFrame.from_dict(npy)
+for vars in ['met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
+       'ptl2', 'ptll']:
+    npd[vars] = npd[vars].apply(np.log10)
 #print npd
 wSM = df.AsNumpy("w")
 wpdSM = pd.DataFrame.from_dict(wSM)
@@ -48,10 +51,13 @@ wpdSM = pd.DataFrame.from_dict(wSM)
 
 npyBSM = dfBSM.AsNumpy(pd_variables)
 npdBSM =pd.DataFrame.from_dict(npyBSM)
+for vars in ['met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
+       'ptl2', 'ptll']:
+    npdBSM[vars] = npdBSM[vars].apply(np.log10)
 npywBSM = dfBSM.AsNumpy("w")
 npdwBSM = pd.DataFrame.from_dict(npywBSM)
 
-nEntries = 400000
+nEntries = 2000000
 npd = npd.head(nEntries)
 npdBSM = npdBSM.head(int(round(nEntries*0.2)))
 npdwBSM = npdwBSM.head(int(round(nEntries*0.2)))
@@ -72,7 +78,7 @@ t.fit(X_train)
 #X_train = t.transform(X_train)
 X_test = t.transform(X_test)
 #npdBSM = t.transform(npdBSM)
-model = tf.keras.models.load_model('vae_denselayers_withWeights_6_latentDim_100epoch')
+model = tf.keras.models.load_model('vae_denselayers_withWeights_6_latentDim_100epoch_BatchNorm_logVars')
 #model = tf.keras.models.load_model('vae_denselayers_4Dim_withWeights')
 out = model.predict(X_test)
 #print out[0:,0]
