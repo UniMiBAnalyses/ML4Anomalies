@@ -78,7 +78,7 @@ t.fit(X_train)
 #X_train = t.transform(X_train)
 X_test = t.transform(X_test)
 npdBSM = t.transform(npdBSM)
-model = tf.keras.models.load_model('vae_denselayers_withWeights_6_latentDim_100epoch')
+model = tf.keras.models.load_model('vae_denselayers_withWeights_6D_latentDim_500epoch')
 model2 = tf.keras.models.load_model("vae_denselayers_withWeights_5_latentDim_500epoch_new")
 model3 = tf.keras.models.load_model("vae_denselayers_withWeights_5_latentDim_1000epoch")
 
@@ -93,8 +93,11 @@ out3 = model3.predict(X_test)
 #for i in range(len(X_test  [0:,0])):
 #    diff.append(out[i,0]-X_test[i,0])
 #setting up plots    
-
-
+"""
+print "Dove finiscono le entries ?"
+for i in range(len(X_test[:,6])):
+        print X_test[i,6]
+"""
 fig, axes = plt.subplots(nrows=4,ncols=4)
 fig.patch.set_facecolor("w")
 nvar = 0
@@ -103,31 +106,29 @@ ncols = 4
 for i in range(nrows):
     for j in range(ncols):
         if nvar < len(pd_variables):
-            axes[i][j].hist(X_test[0:,nvar],bins=300,histtype="step",color="blue",alpha=0.6,linewidth=2,label="Input")
-            axes[i][j].set_xlabel(pd_variables[nvar])
-            axes[i][j].hist(out2[0:,nvar],bins=300,histtype="step",color="green",alpha=0.6,linewidth=2, label="500 epochs and 5D new")        
-            axes[i][j].hist(out3[0:,nvar],bins=300,histtype="step",color="black",alpha=0.6,linewidth=2, label="1000 epochs and 5D")        
-            axes[i][j].hist(out[0:,nvar],bins=300,histtype="step",color="red",alpha=0.6,linewidth=2,label="100 epochs 6D")
-            axes[i][j].set_xlim(xmin =-0.1,xmax=0.2)
-            axes[0][j].set_xlim(xmin =-0.1,xmax=1.2)            
-            axes[1][0].set_xlim(xmin =-0.1,xmax=1.2)            
-            axes[1][1].set_xlim(xmin =-0.1,xmax=1.2)       
+            axes[i][j].hist(out2[0:,nvar],bins=500, range=[-0.1,1.2],histtype="step",color="green",alpha=0.6,linewidth=2, label="500 epochs and 5D new")        
+            axes[i][j].hist(X_test[0:,nvar],bins=500, range=[-0.1,1.2],histtype="step",color="blue",alpha=0.6,linewidth=2,label="Input")
+            axes[i][j].set_xlabel(pd_variables[nvar])            
+            axes[i][j].hist(out3[0:,nvar],bins=500, range=[-0.1,1.2],histtype="step",color="black",alpha=0.6,linewidth=2, label="1000 epochs and 5D")        
+            axes[i][j].hist(out[0:,nvar],bins=500, range=[-0.1,1.2],histtype="step",color="red",alpha=0.6,linewidth=2,label="500 epochs 6D")
+            axes[2][j].set_xlim(xmin =-0.01,xmax=0.4)            
+            axes[1][2].set_xlim(xmin =-0.01,xmax=0.4)            
+            axes[1][3].set_xlim(xmin =-0.01,xmax=0.4)       
+            axes[3][j].set_xlim(xmin =-0.01,xmax=0.4)       
             #axes[i][j].xaxis.grid(True, which="major")
             #axes[i][j].yaxis.grid(True, which="major")
             nvar=nvar+1
-axes[3][2].hist(X_test[0:,12],bins=300,histtype="step",color="blue",alpha=0.6,linewidth=2,label="Input")
-axes[3][2].hist(out2[0:,12],bins=300,histtype="step",color="green",alpha=0.6,linewidth=2, label="500 epochs and 5D new")        
-axes[3][2].hist(out3[0:,12],bins=300,histtype="step",color="black",alpha=0.6,linewidth=2, label="1000 epochs and 5D")        
-axes[3][2].hist(out[0:,12],bins=300,histtype="step",color="red",alpha=0.6,linewidth=2,label="100 epochs 6D")
+axes[3][2].hist(X_test[0:,12],bins=300,range=[-0.2,0.6],histtype="step",color="blue",alpha=0.6,linewidth=2,label="Input")
+axes[3][2].hist(out2[0:,12],bins=300,range=[-0.2,0.6],histtype="step",color="green",alpha=0.6,linewidth=2, label="500 epochs and 5D new")        
+axes[3][2].hist(out3[0:,12],bins=300,range=[-0.2,0.6],histtype="step",color="black",alpha=0.6,linewidth=2, label="1000 epochs and 5D")        
+axes[3][2].hist(out[0:,12],bins=300,range=[-0.2,0.6],histtype="step",color="red",alpha=0.6,linewidth=2,label="100 epochs 6D")
 axes[3][2].set_yscale('log')
-axes[3][2].set_xlim(xmin=-0.2,xmax=0.6)    
 axes[3][2].set_xlabel(pd_variables[12])        
-axes[3][3].hist(X_test[0:,13],bins=300,histtype="step",color="blue",alpha=0.6,linewidth=2,label="Input")
-axes[3][3].hist(out2[0:,13],bins=300,histtype="step",color="green",alpha=0.6,linewidth=2, label="500 epochs and 5D new")        
-axes[3][3].hist(out3[0:,13],bins=300,histtype="step",color="black",alpha=0.6,linewidth=2, label="1000 epochs and 5D")        
-axes[3][3].hist(out[0:,13],bins=300,histtype="step",color="red",alpha=0.6,linewidth=2,label="100 epochs 6D")
+axes[3][3].hist(X_test[0:,13],bins=300,range=[-0.2,0.6],histtype="step",color="blue",alpha=0.6,linewidth=2,label="Input")
+axes[3][3].hist(out2[0:,13],bins=300,range=[-0.2,0.6],histtype="step",color="green",alpha=0.6,linewidth=2, label="500 epochs and 5D new")        
+axes[3][3].hist(out3[0:,13],bins=300,range=[-0.2,0.6],histtype="step",color="black",alpha=0.6,linewidth=2, label="1000 epochs and 5D")        
+axes[3][3].hist(out[0:,13],bins=300,range=[-0.2,0.6],histtype="step",color="red",alpha=0.6,linewidth=2,label="100 epochs 6D")
 axes[3][3].set_yscale('log')    
-axes[3][3].set_xlim(xmin=-0.2,xmax=0.6)
 axes[3][3].set_xlabel(pd_variables[13])    
 
 #plt.legend()
