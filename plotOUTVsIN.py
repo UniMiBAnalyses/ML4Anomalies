@@ -84,7 +84,7 @@ model3 = tf.keras.models.load_model("vae_denselayers_withWeights_5_latentDim_100
 
 encoder = tf.keras.models.load_model('encoder_6_latentDim')
 out = model.predict(X_test)
-out2 = model2.predict(X_test)
+#out2 = model2.predict(X_test)
 out3 = model3.predict(X_test)
 
 #print out[0:,0]
@@ -106,11 +106,11 @@ ncols = 4
 for i in range(nrows):
     for j in range(ncols):
         if nvar < len(pd_variables):
-            axes[i][j].hist(out2[0:,nvar],bins=500, range=[-0.1,1.2],histtype="step",color="green",alpha=0.6,linewidth=2, label="500 epochs and 5D new")        
-            axes[i][j].hist(X_test[0:,nvar],bins=500, range=[-0.1,1.2],histtype="step",color="blue",alpha=0.6,linewidth=2,label="Input")
+            #axes[i][j].hist(out2[0:,nvar],bins=500, range=[-0.1,1.2],histtype="step",color="green",alpha=0.6,linewidth=2, label="500 epochs and 5D")        
+            axes[i][j].hist(X_test[0:,nvar],bins=500, weights = wxtest,range=[-0.1,1.2],histtype="step",color="blue",alpha=0.6,linewidth=2,label="Input")
             axes[i][j].set_xlabel(pd_variables[nvar])            
-            axes[i][j].hist(out3[0:,nvar],bins=500, range=[-0.1,1.2],histtype="step",color="black",alpha=0.6,linewidth=2, label="1000 epochs and 5D")        
-            axes[i][j].hist(out[0:,nvar],bins=500, range=[-0.1,1.2],histtype="step",color="red",alpha=0.6,linewidth=2,label="500 epochs 6D")
+            axes[i][j].hist(out3[0:,nvar],bins=500,weights = wxtest, range=[-0.1,1.2],histtype="step",color="black",alpha=0.6,linewidth=2, label="1000 epochs and 5D")        
+            axes[i][j].hist(out[0:,nvar],bins=500,range=[-0.1,1.2],weights = wxtest,histtype="step",color="red",alpha=0.6,linewidth=2,label="500 epochs 6D")
             axes[2][j].set_xlim(xmin =-0.01,xmax=0.4)            
             axes[1][2].set_xlim(xmin =-0.01,xmax=0.4)            
             axes[1][3].set_xlim(xmin =-0.01,xmax=0.4)       
@@ -119,13 +119,13 @@ for i in range(nrows):
             #axes[i][j].yaxis.grid(True, which="major")
             nvar=nvar+1
 axes[3][2].hist(X_test[0:,12],bins=300,range=[-0.2,0.6],histtype="step",color="blue",alpha=0.6,linewidth=2,label="Input")
-axes[3][2].hist(out2[0:,12],bins=300,range=[-0.2,0.6],histtype="step",color="green",alpha=0.6,linewidth=2, label="500 epochs and 5D new")        
+#axes[3][2].hist(out2[0:,12],bins=300,range=[-0.2,0.6],histtype="step",color="green",alpha=0.6,linewidth=2, label="500 epochs and 5D new")        
 axes[3][2].hist(out3[0:,12],bins=300,range=[-0.2,0.6],histtype="step",color="black",alpha=0.6,linewidth=2, label="1000 epochs and 5D")        
 axes[3][2].hist(out[0:,12],bins=300,range=[-0.2,0.6],histtype="step",color="red",alpha=0.6,linewidth=2,label="100 epochs 6D")
 axes[3][2].set_yscale('log')
 axes[3][2].set_xlabel(pd_variables[12])        
 axes[3][3].hist(X_test[0:,13],bins=300,range=[-0.2,0.6],histtype="step",color="blue",alpha=0.6,linewidth=2,label="Input")
-axes[3][3].hist(out2[0:,13],bins=300,range=[-0.2,0.6],histtype="step",color="green",alpha=0.6,linewidth=2, label="500 epochs and 5D new")        
+#axes[3][3].hist(out2[0:,13],bins=300,range=[-0.2,0.6],histtype="step",color="green",alpha=0.6,linewidth=2, label="500 epochs and 5D new")        
 axes[3][3].hist(out3[0:,13],bins=300,range=[-0.2,0.6],histtype="step",color="black",alpha=0.6,linewidth=2, label="1000 epochs and 5D")        
 axes[3][3].hist(out[0:,13],bins=300,range=[-0.2,0.6],histtype="step",color="red",alpha=0.6,linewidth=2,label="100 epochs 6D")
 axes[3][3].set_yscale('log')    
