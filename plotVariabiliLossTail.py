@@ -16,17 +16,27 @@ ROOT.ROOT.EnableImplicitMT()
 pd_variables = ['deltaetajj', 'deltaphijj', 'etaj1', 'etaj2', 'etal1', 'etal2',
        'met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
        'ptl2', 'ptll']#,'phij1', 'phij2', 'w']
-df = ROOT.RDataFrame("SSWW_SM","../ntuple_SSWW_SM.root")
+dfAll = ROOT.RDataFrame("SSWW_SM","../ntuple_SSWW_SM.root")
+df = dfAll.Filter("ptj1 > 30 && ptj2 >30 && deltaetajj>2 && mjj>200")
+dfBSMAll = ROOT.RDataFrame("SSWW_cW_QU","../ntuple_SSWW_cW_QU.root")
+dfBSM = dfBSMAll.Filter("ptj1 > 30 && ptj2 >30 && deltaetajj>2 && mjj>200")
+
 #df = df.Filter("mjj >0.")
 npy = df.AsNumpy(pd_variables)
 npd =pd.DataFrame.from_dict(npy)
-dfBSM = ROOT.RDataFrame("SSWW_cW_QU","../ntuple_SSWW_cW_QU.root")
+for vars in ['met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
+       'ptl2', 'ptll']:
+    npd[vars] = npd[vars].apply(np.log10)
+
 #dfBSM  = dfBSM.Filter("mjj >0.")
 npyBSM = dfBSM.AsNumpy(pd_variables)
 npdBSM =pd.DataFrame.from_dict(npyBSM)
 nEntries = 500000
 npd=npd.head(nEntries)
 npdBSM = npdBSM.head(nEntries)
+for vars in ['met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
+       'ptl2', 'ptll']:
+    npdBSM[vars] = npdBSM[vars].apply(np.log10)
 npywBSM = dfBSM.AsNumpy("w")
 npdwBSM = pd.DataFrame.from_dict(npywBSM)
 npdwBSM = npdwBSM.head(nEntries)
@@ -44,7 +54,7 @@ npdBSM = t.transform(npdBSM)
 BSM_dataset = tf.data.Dataset.from_tensor_slices((npdBSM, npdBSM))
 BSM_dataset = BSM_dataset.batch(1)
 """
-model = tf.keras.models.load_model('vae_denselayers_withWeights_6_latentDim_100epoch')
+model = tf.keras.models.load_model('vae_denselayers_withWeights_6D_latentDim_1000epoch_batchsize16_log_eventFiltered')
 #How to select events with large loss
 
 #mydict = {}
@@ -55,10 +65,11 @@ mse = tf.keras.losses.MeanSquaredError()
 myloss_mse = []
 myEvents = []
 output = model.predict(npdBSM)
+
 for i in range(nEntries):
     loss = mse(output[i],npdBSM[i]).numpy()*wBSM[i]
     myloss_mse.append(loss)
-    if loss > 0.0004:
+    if loss > 0.00004:
         myEvents.append(npdBSM[i])       
     
 
@@ -79,7 +90,7 @@ for a,b in zip(myFullLoss, myloss_mse):
 
 """
 myEvents = np.array(myEvents)
-
+output = np.array(output)
 #for i in range(len(pd_variables)):
 #    print pd_variables[i], myEvents[0:,0,i] 
 
@@ -91,9 +102,10 @@ ncols = 4
 for i in range(nrows):
     for j in range(ncols):
         if nvar < len(pd_variables):
-            axes[i][j].hist(myEvents[0:,nvar],bins=300,range=[-0.1,1.1],histtype="step",color="red",alpha=0.6,linewidth=2,label="Loss > 0.0004")
-            axes[i][j].hist(npdBSM[0:,nvar],bins=300,range=[-0.1,1.1],histtype="step",color="blue",alpha=0.6,linewidth=2,label="BSM")
-            axes[i][j].hist(X_test[0:,nvar],bins=300,range=[-0.1,1.1],histtype="step",color="green",alpha=0.6,linewidth=2,label="SM")
+            axes[i][j].hist(myEvents[0:,nvar],bins=300,range=[-0.1,1.1],histtype="step",color="red",alpha=0.5,linewidth=2,label="Loss > 0.00004")
+            axes[i][j].hist(output[0:,nvar],bins=300,range=[-0.1,1.1],histtype="step",color="orange",alpha=0.5,linewidth=2,label="Output BSM")
+            axes[i][j].hist(npdBSM[0:,nvar],bins=300,range=[-0.1,1.1],histtype="step",color="blue",alpha=0.5,linewidth=2,label="BSM")
+            axes[i][j].hist(X_test[0:,nvar],bins=300,range=[-0.1,1.1],histtype="step",color="green",alpha=0.5,linewidth=2,label="SM")
             axes[i][j].set_xlabel(pd_variables[nvar])
             nvar= nvar+1            
             #axes[i][j].xaxis.grid(True, which="major")
