@@ -93,11 +93,9 @@ All_test = t.transform(All_test)
 
 model = tf.keras.models.load_model('vae_denselayers_withWeights_7D_latentDim_1000epoch_batchsize16_log_eventFiltered')
 mylosses = LossPerBatch()
-#model.evaluate(X_test,X_test,batch_size=1,callbacks=[mylosses],verbose=0,sample_weight=wx_test)
 model.evaluate(X_test,X_test,batch_size=1,callbacks=[mylosses],verbose=0)
 
 mylosses_All = LossPerBatch()
-#model.evaluate(All_test,All_test,batch_size=1,callbacks=[mylosses_All],verbose=0,sample_weight=weight_test)
 model.evaluate(All_test,All_test,batch_size=1,callbacks=[mylosses_All],verbose=0)
 
 myloss = mylosses.eval_loss
@@ -107,6 +105,8 @@ myloss =np.asarray(myloss)
 myloss_All = np.asarray(myloss_All)
 np.savetxt("lossSM_"+str(cW)+".csv", myloss,delimiter=',')
 np.savetxt("lossBSM_"+str(cW)+".csv", myloss_All,delimiter=',')
+np.savetxt("weight_BSM_"+str(cW)+".csv",weight_test,delimiter=',')
+np.savetxt("weight_SM_"+str(cW)+".csv",wx_test,delimiter=',')
 #print "Eff All = ", 1.*(myloss_All>cutLoss).sum()/len(myloss_All)
 #print "Eff SM = ",1.*(myloss>cutLoss).sum()/len(myloss)
 ax = plt.figure(figsize=(7,5), dpi=100, facecolor="w").add_subplot(111)
