@@ -35,7 +35,7 @@ class LossPerBatch(tf.keras.callbacks.Callback):
 
 cW = 0.3 #0.3
 cutLoss = 0.00004
-nEntries = 200000
+nEntries = 20000
 
 pd_variables = ['deltaetajj', 'deltaphijj', 'etaj1', 'etaj2', 'etal1', 'etal2',
        'met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
@@ -93,10 +93,12 @@ All_test = t.transform(All_test)
 
 model = tf.keras.models.load_model('vae_denselayers_withWeights_7D_latentDim_1000epoch_batchsize16_log_eventFiltered')
 mylosses = LossPerBatch()
-model.evaluate(X_test,X_test,batch_size=1,callbacks=[mylosses],verbose=0,sample_weight=wx_test)
+#model.evaluate(X_test,X_test,batch_size=1,callbacks=[mylosses],verbose=0,sample_weight=wx_test)
+model.evaluate(X_test,X_test,batch_size=1,callbacks=[mylosses],verbose=0)
 
 mylosses_All = LossPerBatch()
-model.evaluate(All_test,All_test,batch_size=1,callbacks=[mylosses_All],verbose=0,sample_weight=weight_test)
+#model.evaluate(All_test,All_test,batch_size=1,callbacks=[mylosses_All],verbose=0,sample_weight=weight_test)
+model.evaluate(All_test,All_test,batch_size=1,callbacks=[mylosses_All],verbose=0)
 
 myloss = mylosses.eval_loss
 myloss_All = mylosses_All.eval_loss
@@ -111,11 +113,11 @@ ax = plt.figure(figsize=(7,5), dpi=100, facecolor="w").add_subplot(111)
 ax.xaxis.grid(True, which="major")
 ax.yaxis.grid(True, which="major")
 #ax.set_ylim(ymax=10000)
-ax.hist(myloss_All,bins=1000,range=(0.,0.0005),histtype="step",color="red",alpha=1.,linewidth=2,density =1,label ="BSM Loss")
-ax.hist(myloss,bins=1000,range=(0.,0.0005),histtype="step",color="blue",alpha=1.,linewidth=2,density =1, label="SM Loss")
+ax.hist(myloss_All,bins=1000,range=(0.,0.5),weights=weight_test,histtype="step",color="red",alpha=1.,linewidth=2,density =1,label ="BSM Loss")
+ax.hist(myloss,bins=1000,range=(0.,0.5),weights=wx_test,histtype="step",color="blue",alpha=1.,linewidth=2,density =1, label="SM Loss")
 #plt.hist(myloss_BSM2,bins=100,range=(0.,0.00015),histtype="step",color="green",alpha=1.)
 plt.legend()
-plt.show()
+
 ax.patch.set_facecolor("w")
 
 t = MinMaxScaler()
@@ -128,15 +130,48 @@ fig.patch.set_facecolor("w")
 nvar = 0
 nrows = 4
 ncols = 4
+bins = 200
 for i in range(nrows):
     for j in range(ncols):
         if nvar < len(pd_variables):
             if pd_variables[nvar] != "w":
-                axes[i][j].hist(All[0:,nvar],bins=300,range=[-0.1,1.1],density=1,weights= weights_all,histtype="step",color="red",alpha=0.5,linewidth=2,label="All")
-                axes[i][j].hist(SM[0:,nvar],bins=300,range=[-0.1,1.1], density=1,weights= weights_SM,histtype="step",color="blue",alpha=0.5,linewidth=2,label="SM")
+                axes[i][j].hist(All[0:,nvar],bins=bins,range=[-0.1,1.1],density=1,weights= weights_all,histtype="step",color="red",alpha=0.5,linewidth=1,label="All")
+                axes[i][j].hist(SM[0:,nvar],bins=bins,range=[-0.1,1.1], density=1,weights= weights_SM,histtype="step",color="blue",alpha=0.5,linewidth=1,label="SM")
                 axes[i][j].set_xlabel(pd_variables[nvar])
             nvar= nvar+1            
             #axes[i][j].xaxis.grid(True, which="major")
             #axes[i][j].yaxis.grid(True, which="major")     
 #axes[3][2].legend()
+
+
+out = model.predict(All)
+out_SM = model.predict(X_test)
+print "size SM = ", len(SM[0:,1])
+print "size BSM = ", len(All[0:,1])
+fig, axes = plt.subplots(nrows=4,ncols=4)
+fig.patch.set_facecolor("w")
+nvar = 0
+nrows = 4
+ncols = 4
+for i in range(nrows):
+    for j in range(ncols):
+        if nvar < len(pd_variables)-1:                       
+            #axes[i][j].hist(All[0:,nvar],bins=bins, density=1,weights= weights_all,range=[-0.1,1.1],histtype="step",color="red",alpha=0.3,linewidth=1,label="BSM")                        
+            #axes[i][j].hist(out[0:,nvar],bins=bins,density=1,range=[-0.1,1.1],weights = weights_all,histtype="step",color="orange",alpha=0.3,linewidth=1,label="BSM OUT")
+            #axes[i][j].hist(X_test[0:,nvar],bins=bins, density=1,weights= wx_test,range=[-0.1,1.1],histtype="step",color="blue",alpha=0.3,linewidth=1,label="SM")                        
+            #axes[i][j].hist(out_SM[0:,nvar],bins=bins,density=1,range=[-0.1,1.1],weights = wx_test,histtype="step",color="green",alpha=0.3,linewidth=1,label="SM OUT")
+            axes[i][j].scatter(All[0:,nvar],out[0:,nvar],c="red",alpha=0.3,label = "BSM")
+            axes[i][j].scatter(X_test[0:,nvar],out_SM[0:,nvar],c="blue",alpha=0.3, label="SM")
+            axes[i][j].set_xlabel(pd_variables[nvar]) 
+            axes[i][j].legend()                       
+            axes[i][j].set_xlim(xmin =-0.1,xmax=1.1)            
+            axes[i][j].set_ylim(ymin =-0.1,ymax=1.1)            
+            #axes[1][3].set_xlim(xmin =-0.01,xmax=1.4)       
+            #axes[3][j].set_xlim(xmin =-0.01,xmax=1.4)       
+            #axes[i][j].xaxis.grid(True, which="major")
+            #axes[i][j].yaxis.grid(True, which="major")
+            nvar=nvar+1
+plt.rc('legend',fontsize='xx-small')
+#plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+#plt.legend()
 plt.show()
