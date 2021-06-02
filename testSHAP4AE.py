@@ -7,7 +7,7 @@ import pandas as pd
 import tensorflow as tf
 #from matplotlib import pyplot as plt
 
-#from VAE_model import *
+#from VAE_new_model import *
 
 ROOT.ROOT.EnableImplicitMT()
 
@@ -77,7 +77,7 @@ t.fit(X_train)
 All_test = t.transform(All_test)
 All_BSM_test = t.transform(All_BSM_test)
 
-model = tf.keras.models.load_model('vae_denselayers_withWeights_6D_latentDim_1000epoch_batchsize16_log_eventFiltered')
+model = tf.keras.models.load_model('vae_test_noSampling')
 output = model.predict(All_BSM_test)
 rec_err = np.linalg.norm(All_BSM_test - output, axis = 1)
 idx = list(rec_err).index(max(rec_err))
@@ -86,3 +86,14 @@ df = pd.DataFrame(data = All_BSM_test[idx], index = All.columns, columns = ['rec
 #print(sort_by_absolute(df, idx).T)
 top_5_features = sort_by_absolute(df, idx).iloc[:5,:]
 print(top_5_features.T)
+#print(model.summary())
+
+for i in top_5_features.index:
+    weights = model.get_layer("encoder_l1").get_weights()
+    #print weights 
+    ## make sure the weight for the specific one input feature is set to 0
+    feature_index = list(df.index).index(i)
+    print(feature_index, i)
+    updated_weights = weights[:][0]
+    updated_weights[feature_index] = [0]*len(updated_weights[feature_index])
+    model.get_layer('encoder_l1').set_weights([updated_weights, weights[:][1]])
