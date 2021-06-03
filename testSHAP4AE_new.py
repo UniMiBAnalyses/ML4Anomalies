@@ -9,7 +9,7 @@ import tensorflow as tf
 
 #from VAE_new_model import *
 import ROOT
-ROOT.ROOT.EnableImplicitMT()
+
 
 def sort_by_absolute(df, index):
     df_abs = df.apply(lambda x: abs(x))
