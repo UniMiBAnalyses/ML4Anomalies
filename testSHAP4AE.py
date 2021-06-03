@@ -1,6 +1,6 @@
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
-import ROOT
+
 #import sys
 import numpy as np
 import pandas as pd
@@ -8,7 +8,7 @@ import tensorflow as tf
 from matplotlib import pyplot as plt
 
 #from VAE_new_model import *
-
+import ROOT
 
 def sort_by_absolute(df, index):
     df_abs = df.apply(lambda x: abs(x))
