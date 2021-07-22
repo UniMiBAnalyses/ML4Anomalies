@@ -71,7 +71,8 @@ class Decoder(layers.Layer):
         self.decoder_layer4 = layers.Dense(half_input,name="decoder_l4")        
         self.decoder_active_layer4 = layers.LeakyReLU(name="decoder_leakyrelu_4")
         self.dense_output = layers.Dense(original_dim,name="decoder_output")        
-        self.decoder_active_output = layers.ReLU(name="decoder_relu_output", max_value = 1)
+        #self.decoder_active_output = layers.ReLU(name="decoder_relu_output", max_value = 1)
+        self.decoder_active_output = layers.Activation('sigmoid')
 
     def call(self, inputs):
         layer1 = self.decoder_layer1(inputs)        
