@@ -1,21 +1,13 @@
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
-import sys
 import numpy
 import pandas as pd
 import tensorflow as tf
-from tensorflow.keras import layers
-
 
 #taking the model
 from VAE_model import *
 
 import ROOT
-#ROOT.ROOT.EnableImplicitMT()
-
-
-
-
 
 #
 # variable from the nutple
@@ -28,22 +20,16 @@ df = dfAll.Filter("ptj1 > 30 && ptj2 >30 && deltaetajj>2 && mjj>200")
 
 
 npy = df.AsNumpy(pd_variables)
-wSM = df.AsNumpy("w")
 npd =pd.DataFrame.from_dict(npy)
-wpdSM = pd.DataFrame.from_dict(wSM)
 nEntries = 1000000
 npd = npd.head(nEntries*2)
 #to be done for all the pt and mass and met variables
 for vars in ['met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
        'ptl2', 'ptll']:
     npd[vars] = npd[vars].apply(numpy.log10)
-wpdSM = wpdSM.head(nEntries*2)
 
 X_train, X_test, y_train, y_test = train_test_split(npd, npd, test_size=0.2, random_state=1)
-wx_train, wx_test, wy_train, wy_test = train_test_split(wpdSM, wpdSM, test_size=0.2, random_state=1)
-#print wx_train,X_train
-wx = wx_train["w"].to_numpy()
-wxtest = wx_test["w"].to_numpy()
+
 # scale data
 t = MinMaxScaler()
 t.fit(X_train)
@@ -52,25 +38,16 @@ X_test = t.transform(X_test)
 
 n_inputs = npd.shape[1]
 original_dim = n_inputs
-latent_dim = 7
-intermediate_dim = 7
-
+latent_dim = 2
+intermediate_dim = 14
+numberOfEpochs = 2
 vae = VariationalAutoEncoder(original_dim, 2*original_dim, latent_dim,intermediate_dim)  
 vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005),  loss=tf.keras.losses.MeanSquaredError())
+hist = vae.fit(X_train,X_train, epochs=numberOfEpochs, batch_size = 32, validation_data=(X_test, X_test))
 
-
-#hist = vae.fit(X_train,X_train, epochs=250,sample_weight=wx, batch_size = 16)
-hist = vae.fit(X_train,X_train, epochs=250, batch_size = 16)
+tf.keras.models.save_model(vae,'test_vaemodel_school'+str(numberOfEpochs)+"Epochs")
+numpy.savetxt("test_vaemodel_school_loss"+str(numberOfEpochs)+"Epochs.csv", hist.history["loss"],delimiter=',')
 
 encoder = LatentSpace(original_dim, 2*original_dim, latent_dim, intermediate_dim)
-
-z = encoder.predict(X_train)
-#print z
-#vae.save('vae_denselayers_4Dim_withWeights')
-tf.keras.models.save_model(encoder,'encoder_7D_latentDim_1000epoch_batchsize16_log_eventFiltered')
-tf.keras.models.save_model(vae,'vae_denselayers_withWeights_7D_latentDim_1000epoch_batchsize16_log_eventFiltered')
-numpy.savetxt("loss_training_7D_1000epoch_batchsize16_eventFiltered.csv", hist.history["loss"],delimiter=',')
-#encoded_data = encoder.predict(X_test)
-#decoded_data = decoder.predict(encoded_data)
-#results = vae.evaluate(X_test, X_test, batch_size=32,sample_weight=wxtest)
-#print("test loss, test acc:", results)
+encoder.predict(X_test)
+tf.keras.models.save_model(encoder,'test_encoder_school'+str(numberOfEpochs)+"Epochs")
