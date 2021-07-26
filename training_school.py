@@ -38,9 +38,9 @@ X_test = t.transform(X_test)
 
 n_inputs = npd.shape[1]
 original_dim = n_inputs
-latent_dim = 2
+latent_dim = 7
 intermediate_dim = 14
-numberOfEpochs = 2
+numberOfEpochs = 100
 vae = VariationalAutoEncoder(original_dim, 2*original_dim, latent_dim,intermediate_dim)  
 vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005),  loss=tf.keras.losses.MeanSquaredError())
 hist = vae.fit(X_train,X_train, epochs=numberOfEpochs, batch_size = 32, validation_data=(X_test, X_test))
