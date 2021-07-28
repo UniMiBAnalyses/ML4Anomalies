@@ -1,5 +1,7 @@
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
+
 import sys
 import numpy
 import pandas as pd
@@ -8,7 +10,7 @@ from tensorflow.keras import layers
 
 
 #taking the model
-from VAE_model import *
+from VAE_model_extended import *
 
 import ROOT
 #ROOT.ROOT.EnableImplicitMT()
@@ -46,30 +48,28 @@ wx = wx_train["w"].to_numpy()
 wxtest = wx_test["w"].to_numpy()
 # scale data
 t = MinMaxScaler()
+#t = StandardScaler()
 t.fit(X_train)
 X_train = t.transform(X_train)
 X_test = t.transform(X_test)
 
 n_inputs = npd.shape[1]
 original_dim = n_inputs
-latent_dim = 7
-intermediate_dim = 7
 
-vae = VariationalAutoEncoder(original_dim, 2*original_dim, latent_dim,intermediate_dim)  
+vae = VariationalAutoEncoder(original_dim)  
 vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005),  loss=tf.keras.losses.MeanSquaredError())
 
-
 #hist = vae.fit(X_train,X_train, epochs=250,sample_weight=wx, batch_size = 16)
-hist = vae.fit(X_train,X_train, epochs=250, batch_size = 16)
+hist = vae.fit(X_train,X_train, epochs=100, batch_size = 32)
 
-encoder = LatentSpace(original_dim, 2*original_dim, latent_dim, intermediate_dim)
+#encoder = LatentSpace(latent_dim, intermediate_dim, original_dim, half_input)
 
-z = encoder.predict(X_train)
+#z = encoder.predict(X_train)
 #print z
 #vae.save('vae_denselayers_4Dim_withWeights')
-tf.keras.models.save_model(encoder,'encoder_7D_latentDim_1000epoch_batchsize16_log_eventFiltered')
-tf.keras.models.save_model(vae,'vae_denselayers_withWeights_7D_latentDim_1000epoch_batchsize16_log_eventFiltered')
-numpy.savetxt("loss_training_7D_1000epoch_batchsize16_eventFiltered.csv", hist.history["loss"],delimiter=',')
+#tf.keras.models.save_model(encoder,'encoder_test_newModelDimenstions_MinMaxScaler')
+tf.keras.models.save_model(vae,'vae_test_newModelDimenstions_MinMaxScaler')
+numpy.savetxt("loss_test_newModelDimenstions_MinMaxScaler.csv", hist.history["loss"],delimiter=',')
 #encoded_data = encoder.predict(X_test)
 #decoded_data = decoder.predict(encoded_data)
 #results = vae.evaluate(X_test, X_test, batch_size=32,sample_weight=wxtest)
