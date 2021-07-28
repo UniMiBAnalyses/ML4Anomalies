@@ -32,7 +32,7 @@ class LossPerBatch(tf.keras.callbacks.Callback):
 
 cW = 0.3 #0.3
 cutLoss = 0.00004
-nEntries = 50000
+nEntries = 500000
 
 pd_variables = ['deltaetajj', 'deltaphijj', 'etaj1', 'etaj2', 'etal1', 'etal2',
        'met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
@@ -88,8 +88,10 @@ wx_train, wx_test, wy_train, wy_test = train_test_split(weights_SM, weights_SM, 
 #All_BSM = All_BSM.to_numpy()
 _, All_BSM_test,_,_  = train_test_split(All_BSM,All_BSM,test_size=0.2, random_state=1)
 w_train, w_test,_,_ = train_test_split(weights, weights,test_size=0.2, random_state=1)
-All_test = np.concatenate((All_BSM_test,X_test))
-weight_test = np.concatenate((w_test, wx_test))
+#All_test = np.concatenate((All_BSM_test,X_test))
+#weight_test = np.concatenate((w_test, wx_test))
+All_test= All_BSM_test
+weight_test=w_test
 #weight_test = np.abs(weight_test)
 
 t = MinMaxScaler()
@@ -102,7 +104,7 @@ model = tf.keras.models.load_model('vae_test_newModelDimenstions_MinMaxScaler')
 mylosses = LossPerBatch()
 mylosses_train = LossPerBatch()
 model.evaluate(X_test,X_test,batch_size=1,callbacks=[mylosses],verbose=0)
-model.evaluate(X_train,X_train,batch_size=1,callbacks=[mylosses_train],verbose=0)
+#model.evaluate(X_train,X_train,batch_size=1,callbacks=[mylosses_train],verbose=0)
 
 mylosses_All = LossPerBatch()
 model.evaluate(All_test,All_test,batch_size=1,callbacks=[mylosses_All],verbose=0)
