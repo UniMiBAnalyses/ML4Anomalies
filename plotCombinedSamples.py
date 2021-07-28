@@ -1,6 +1,5 @@
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import MinMaxScaler
 import ROOT
 import sys
 import numpy as np
@@ -8,9 +7,7 @@ import pandas as pd
 import tensorflow as tf
 from matplotlib import pyplot as plt
 
-#from VAE_model import *
 
-ROOT.ROOT.EnableImplicitMT()
 
 class LossPerBatch(tf.keras.callbacks.Callback):
     def __init__(self,**kwargs):
@@ -35,7 +32,7 @@ class LossPerBatch(tf.keras.callbacks.Callback):
 
 cW = 0.3 #0.3
 cutLoss = 0.00004
-nEntries = 500000000000
+nEntries = 500000
 
 pd_variables = ['deltaetajj', 'deltaphijj', 'etaj1', 'etaj2', 'etal1', 'etal2',
        'met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
@@ -128,11 +125,9 @@ ax = plt.figure(figsize=(7,5), dpi=100, facecolor="w").add_subplot(111)
 ax.xaxis.grid(True, which="major")
 ax.yaxis.grid(True, which="major")
 #ax.set_ylim(ymax=10000)%
-ax.hist(myloss_All,bins=100,range=(0.,0.5),weights=weight_test,histtype="step",color="red",alpha=.3,linewidth=2,density =1,label ="BSM Loss")
-ax.hist(myloss,bins=100,range=(0.,0.5),weights=wx_test,histtype="step",color="blue",alpha=.3,linewidth=2,density =1, label="SM Test Loss")
-ax.hist(myloss_train,bins=100,range=(0.,0.5),weights=wx_train,histtype="step",color="green",alpha=.3,linewidth=2,density =1, label="SM Train Loss")
-
-#plt.hist(myloss_BSM2,bins=100,range=(0.,0.00015),histtype="step",color="green",alpha=1.)
+ax.hist(myloss_All,bins=100,range=(0.,0.1),weights=weight_test,histtype="step",color="red",alpha=.3,linewidth=2,density =1,label ="BSM Loss")
+ax.hist(myloss,bins=100,range=(0.,0.1),weights=wx_test,histtype="step",color="blue",alpha=.3,linewidth=2,density =1, label="SM Test Loss")
+ax.set_yscale('log')
 plt.legend()
 
 ax.patch.set_facecolor("w")
@@ -141,29 +136,12 @@ t = MinMaxScaler()
 t.fit(SM)
 SM = t.transform(SM)
 All= t.transform(All)
-"""
-fig, axes = plt.subplots(nrows=4,ncols=4)
-fig.patch.set_facecolor("w")
-nvar = 0
-nrows = 4
-ncols = 4
-bins = 200
-for i in range(nrows):
-    for j in range(ncols):
-        if nvar < len(pd_variables):
-            if pd_variables[nvar] != "w":
-                axes[i][j].hist(All[0:,nvar],bins=bins,range=[-5,5],density=1,weights= weights_all,histtype="step",color="red",alpha=0.5,linewidth=1,label="All")
-                axes[i][j].hist(SM[0:,nvar],bins=bins,range=[-5,5], density=1,weights= weights_SM,histtype="step",color="blue",alpha=0.5,linewidth=1,label="SM")
-                axes[i][j].set_xlabel(pd_variables[nvar])
-            nvar= nvar+1            
-            #axes[i][j].xaxis.grid(True, which="major")
-            #axes[i][j].yaxis.grid(True, which="major")     
-#axes[3][2].legend()
-"""
 
 bins = 100
-out = model.predict(All)
 out_SM = model.predict(X_test)
+out = model.predict(All_test)
+diffBSM = out-All_test
+diffSM = out_SM - X_test
 fig, axes = plt.subplots(nrows=4,ncols=4)
 fig.patch.set_facecolor("w")
 nvar = 0
@@ -172,39 +150,14 @@ ncols = 4
 for i in range(nrows):
     for j in range(ncols):
         if nvar < len(pd_variables)-1:                       
-            axes[i][j].hist(All[0:,nvar],bins=bins, density=1,weights= weights_all,range=[-5.,5.],histtype="step",color="red",alpha=0.3,linewidth=1,label="BSM")                        
-            axes[i][j].hist(out[0:,nvar],bins=bins,density=1,range=[-0.1,1.1],weights = weights_all,histtype="step",color="orange",alpha=0.3,linewidth=1,label="BSM OUT")
-            #axes[i][j].hist(X_test[0:,nvar],bins=bins, density=1,weights= wx_test,range=[-5.,5.],histtype="step",color="blue",alpha=0.3,linewidth=1,label="SM")                        
-            #axes[i][j].hist(out_SM[0:,nvar],bins=bins,density=1,range=[-5.,5.],weights = wx_test,histtype="step",color="green",alpha=0.3,linewidth=1,label="SM OUT")
-            #axes[i][j].scatter(All[0:,nvar],out[0:,nvar],c="red",alpha=0.3,s=4,linewidths=0.5,label = "BSM")
-            #axes[i][j].scatter(X_test[0:,nvar],out_SM[0:,nvar],c="blue",alpha=0.3,s=4,linewidths=0.5, label="SM")
+            axes[i][j].hist(diffBSM[0:,nvar],bins=bins, density=1,weights= weight_test,range=[-0.5,0.5],histtype="step",color="red",alpha=0.3,linewidth=1,label="BSM")                                    
+            axes[i][j].hist(diffSM[0:,nvar],bins=bins, density=1,weights= wx_test,range=[-0.5,0.5],histtype="step",color="blue",alpha=0.3,linewidth=1,label="SM")                                    
             axes[i][j].set_xlabel(pd_variables[nvar]) 
             axes[i][j].legend()                       
             #axes[i][j].set_xlim(xmin =-0.1,xmax=1.1)            
             #axes[i][j].set_ylim(ymin =-0.1,ymax=1.1)            
             nvar=nvar+1
-plt.rc('legend',fontsize='xx-small')
-#plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-#plt.legend()
-fig, axes = plt.subplots(nrows=4,ncols=4)
-fig.patch.set_facecolor("w")
-nvar = 0
-nrows = 4
-ncols = 4
-for i in range(nrows):
-    for j in range(ncols):
-        if nvar < len(pd_variables)-1:                       
-            #axes[i][j].hist(All[0:,nvar],bins=bins, density=1,weights= weights_all,range=[-5.,5.],histtype="step",color="red",alpha=0.3,linewidth=1,label="BSM")                        
-            #axes[i][j].hist(out[0:,nvar],bins=bins,density=1,range=[-0.1,1.1],weights = weights_all,histtype="step",color="orange",alpha=0.3,linewidth=1,label="BSM OUT")
-            axes[i][j].hist(X_test[0:,nvar],bins=bins, density=1,weights= wx_test,range=[-5.,5.],histtype="step",color="blue",alpha=0.3,linewidth=1,label="SM")                        
-            axes[i][j].hist(out_SM[0:,nvar],bins=bins,density=1,range=[-5.,5.],weights = wx_test,histtype="step",color="green",alpha=0.3,linewidth=1,label="SM OUT")
-            #axes[i][j].scatter(All[0:,nvar],out[0:,nvar],c="red",alpha=0.3,s=4,linewidths=0.5,label = "BSM")
-            #axes[i][j].scatter(X_test[0:,nvar],out_SM[0:,nvar],c="blue",alpha=0.3,s=4,linewidths=0.5, label="SM")
-            axes[i][j].set_xlabel(pd_variables[nvar]) 
-            axes[i][j].legend()                       
-            #axes[i][j].set_xlim(xmin =-0.1,xmax=1.1)            
-            #axes[i][j].set_ylim(ymin =-0.1,ymax=1.1)            
-            nvar=nvar+1
+            axes[i][j].set_yscale('log')
 plt.rc('legend',fontsize='xx-small')
 #plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 #plt.legend()
