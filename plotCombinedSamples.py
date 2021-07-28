@@ -32,7 +32,7 @@ class LossPerBatch(tf.keras.callbacks.Callback):
 
 cW = 0.3 #0.3
 cutLoss = 0.00004
-nEntries = 500000
+nEntries = 50000
 
 pd_variables = ['deltaetajj', 'deltaphijj', 'etaj1', 'etaj2', 'etal1', 'etal2',
        'met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
@@ -142,6 +142,26 @@ out_SM = model.predict(X_test)
 out = model.predict(All_test)
 diffBSM = out-All_test
 diffSM = out_SM - X_test
+fig, axes = plt.subplots(nrows=4,ncols=4)
+fig.patch.set_facecolor("w")
+nvar = 0
+nrows = 4
+ncols = 4
+for i in range(nrows):
+    for j in range(ncols):
+        if nvar < len(pd_variables)-1:                       
+            axes[i][j].hist(out_SM[0:,nvar],bins=bins, density=1,weights= wx_test,range=[0.,2.],histtype="step",color="red",alpha=0.3,linewidth=1,label="SM Output")                                    
+            axes[i][j].hist(X_test[0:,nvar],bins=bins, density=1,weights= wx_test,range=[0.,2.],histtype="step",color="blue",alpha=0.3,linewidth=1,label="SM Input")                                    
+            axes[i][j].set_xlabel(pd_variables[nvar]) 
+            axes[i][j].legend()                       
+            #axes[i][j].set_xlim(xmin =-0.1,xmax=1.1)            
+            #axes[i][j].set_ylim(ymin =-0.1,ymax=1.1)            
+            nvar=nvar+1
+            #axes[i][j].set_yscale('log')
+plt.rc('legend',fontsize='xx-small')
+#plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+#plt.legend()
+
 fig, axes = plt.subplots(nrows=4,ncols=4)
 fig.patch.set_facecolor("w")
 nvar = 0
