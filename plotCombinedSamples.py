@@ -7,7 +7,7 @@ import pandas as pd
 import tensorflow as tf
 from matplotlib import pyplot as plt
 
-
+modelDir = str(sys.argv[1])
 
 class LossPerBatch(tf.keras.callbacks.Callback):
     def __init__(self,**kwargs):
@@ -33,6 +33,7 @@ class LossPerBatch(tf.keras.callbacks.Callback):
 cW = 0.3 #0.3
 cutLoss = 0.00004
 nEntries = 500000
+nameExtention=str(sys.argv[1])
 
 pd_variables = ['deltaetajj', 'deltaphijj', 'etaj1', 'etaj2', 'etal1', 'etal2',
        'met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
@@ -100,7 +101,7 @@ X_train = t.transform(X_train)
 X_test=t.transform(X_test)
 All_test = t.transform(All_test)
 
-model = tf.keras.models.load_model('vae_test_newModelDimenstions_MinMaxScaler')
+model = tf.keras.models.load_model(modelDir)
 mylosses = LossPerBatch()
 mylosses_train = LossPerBatch()
 model.evaluate(X_test,X_test,batch_size=1,callbacks=[mylosses],verbose=0)
@@ -117,10 +118,10 @@ myloss =np.asarray(myloss)
 myloss_All = np.asarray(myloss_All)
 myloss_train =np.asarray(myloss_train)
 
-np.savetxt("lossSM_noweigths_"+str(cW)+".csv", myloss,delimiter=',')
-np.savetxt("lossBSM_noweigths_"+str(cW)+".csv", myloss_All,delimiter=',')
-np.savetxt("weight_BSM_noweigths_"+str(cW)+".csv",weight_test,delimiter=',')
-np.savetxt("weight_SM_noweigths_"+str(cW)+".csv",wx_test,delimiter=',')
+np.savetxt("lossSM_"+str(nameExtention)+"_"+str(cW)+".csv", myloss,delimiter=',')
+np.savetxt("lossBSM_"+str(nameExtention)+"_"+str(cW)+".csv", myloss_All,delimiter=',')
+np.savetxt("weight_BSM_"+str(nameExtention)+"_"+str(cW)+".csv",weight_test,delimiter=',')
+np.savetxt("weight_SM_"+str(nameExtention)+"_"+str(cW)+".csv",wx_test,delimiter=',')
 #print "Eff All = ", 1.*(myloss_All>cutLoss).sum()/len(myloss_All)
 #print "Eff SM = ",1.*(myloss>cutLoss).sum()/len(myloss)
 ax = plt.figure(figsize=(7,5), dpi=100, facecolor="w").add_subplot(111)
