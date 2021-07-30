@@ -156,12 +156,13 @@ for i in range(nrows):
             axes[i][j].hist(out_SM[0:,nvar],bins=bins, density=1,weights= wx_test,range=[0.,2.],histtype="step",color="red",alpha=0.3,linewidth=1,label="SM Output")                                    
             axes[i][j].hist(X_test[0:,nvar],bins=bins, density=1,weights= wx_test,range=[0.,2.],histtype="step",color="blue",alpha=0.3,linewidth=1,label="SM Input")                                    
             axes[i][j].set_xlabel(pd_variables[nvar]) 
-            axes[i][j].legend()                       
+            #axes[i][j].legend()                       
             #axes[i][j].set_xlim(xmin =-0.1,xmax=1.1)            
             #axes[i][j].set_ylim(ymin =-0.1,ymax=1.1)            
             nvar=nvar+1
             #axes[i][j].set_yscale('log')
-plt.rc('legend',fontsize='xx-small')
+plt.rc('legend',fontsize='xx-small')    
+plt.savefig(str(sys.argv[1])+".pdf")
 #plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 #plt.legend()
 

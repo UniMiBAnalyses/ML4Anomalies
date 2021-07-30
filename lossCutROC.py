@@ -27,18 +27,26 @@ def effComputation(cW):
     return lossSM,lossBSM,weightsSM,weightsBSM,effSM,effBSM
 
 cW = "0.3"
-oldNames = "vae_denselayers_withWeights_7D_latentDim_200epoch_batchsize16_log_eventFiltered_noWeights_"+str(cW)
+oldNames = "vae_test_newModelDimenstions_MinMaxScaler_150_100_50_4_100_"+str(cW)
 print("model 0 ",oldNames)
 lossSM,lossBSM,weightsSM,weightsBSM,effSM,effBSM = effComputation(oldNames)
-newNames1= "vae_test_newModelDimenstions_MinMaxScaler_150_100_50_4_100_"+str(cW)
+
+newNames1= "vae_test_newModelDimenstions_MinMaxScaler_150_100_50_4_200_"+str(cW)
 print("model 1 ",newNames1)
 lossSM1,lossBSM1,weightsSM1,weightsBSM1,effSM1,effBSM1 = effComputation(newNames1)
+
 newNames2= "vae_test_newModelDimenstions_MinMaxScaler_50_10_10_5_100_"+str(cW)
 print("model 2 ",newNames2)
 lossSM2,lossBSM2,weightsSM2,weightsBSM2,effSM2,effBSM2 = effComputation(newNames2)
+
 newNames3= "vae_test_newModelDimenstions_MinMaxScaler_30_20_10_5_100_"+str(cW)
 print("model 3 ",newNames3)
 lossSM3,lossBSM3,weightsSM3,weightsBSM3,effSM3,effBSM3 = effComputation(newNames3)
+
+newNames4 = "vae_test_newModelDimenstions_MinMaxScaler_30_20_10_5_50_"+str(cW)
+print("model 4 ",newNames4)
+lossSM4,lossBSM4,weightsSM4,weightsBSM4,effSM4,effBSM4 = effComputation(newNames4)
+
 ax = plt.figure(figsize=(7,5), dpi=100, facecolor="w").add_subplot(111)
 ax.xaxis.grid(True, which="major")
 ax.yaxis.grid(True, which="major")
@@ -51,6 +59,8 @@ ax.hist(lossBSM2,bins=200,range=(0.,0.05),weights=weightsBSM2,histtype="step",co
 ax.hist(lossSM2,bins=200,range=(0.,0.05),weights=weightsSM2,histtype="step",linestyle='dashed',color="purple",alpha=1.,linewidth=2,density =1, label="SM Loss 2")
 ax.hist(lossBSM3,bins=200,range=(0.,0.05),weights=weightsBSM3,histtype="step",color="orange",alpha=1.,linewidth=2,density =1,label ="BSM Loss 3")
 ax.hist(lossSM3,bins=200,range=(0.,0.05),weights=weightsSM3,histtype="step",linestyle='dashed',color="orange",alpha=1.,linewidth=2,density =1, label="SM Loss 3")
+ax.hist(lossBSM4,bins=200,range=(0.,0.05),weights=weightsBSM4,histtype="step",color="blue",alpha=1.,linewidth=2,density =1,label ="BSM Loss 4")
+ax.hist(lossSM4,bins=200,range=(0.,0.05),weights=weightsSM4,histtype="step",linestyle='dashed',color="blue",alpha=1.,linewidth=2,density =1, label="SM Loss 4")
 
 ax.set_yscale('log')
 plt.legend()
@@ -65,6 +75,7 @@ ax.scatter(effBSM,effSM,color = 'r',s=4,linewidths=0.5,alpha=0.5, label="model0 
 ax.scatter(effBSM1,effSM1,color = 'g',s=4,linewidths=0.5,alpha=0.5, label="model1 cW ="+cW)
 ax.scatter(effBSM2,effSM2,color = 'purple',s=4,linewidths=0.5,alpha=0.5, label="model2 cW ="+cW)
 ax.scatter(effBSM3,effSM3,color = 'orange',s=4,linewidths=0.5,alpha=0.5, label="model3 cW ="+cW)
+ax.scatter(effBSM4,effSM4,color = 'blue',s=4,linewidths=0.5,alpha=0.5, label="model4 cW ="+cW)
 plt.xticks(np.arange(0,1.1,0.05))
 plt.yticks(np.arange(0,1.05,0.05))
 plt.plot([0.,1],[0.,1],color="r")
