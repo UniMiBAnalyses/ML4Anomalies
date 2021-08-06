@@ -67,12 +67,13 @@ myEvents = []
 output = model.predict(npdBSM)
 
 for i in range(nEntries):
-    loss = mse(output[i],npdBSM[i]).numpy()*wBSM[i]
+    loss = mse(output[i],npdBSM[i]).numpy()
     myloss_mse.append(loss)
-    if loss > 0.00004:
+    if loss > 0.04:
         myEvents.append(npdBSM[i])       
     
-
+plt.hist(myloss_mse)
+plt.show()
 
 """
 myFullLoss = []
@@ -103,9 +104,9 @@ for i in range(nrows):
     for j in range(ncols):
         if nvar < len(pd_variables):
             axes[i][j].hist(myEvents[0:,nvar],bins=300,range=[-0.1,1.1],histtype="step",color="red",alpha=0.5,linewidth=2,label="Loss > 0.00004")
-            axes[i][j].hist(output[0:,nvar],bins=300,range=[-0.1,1.1],histtype="step",color="orange",alpha=0.5,linewidth=2,label="Output BSM")
+            #axes[i][j].hist(output[0:,nvar],bins=300,range=[-0.1,1.1],histtype="step",color="orange",alpha=0.5,linewidth=2,label="Output BSM")
             axes[i][j].hist(npdBSM[0:,nvar],bins=300,range=[-0.1,1.1],histtype="step",color="blue",alpha=0.5,linewidth=2,label="BSM")
-            axes[i][j].hist(X_test[0:,nvar],bins=300,range=[-0.1,1.1],histtype="step",color="green",alpha=0.5,linewidth=2,label="SM")
+            #axes[i][j].hist(X_test[0:,nvar],bins=300,range=[-0.1,1.1],histtype="step",color="green",alpha=0.5,linewidth=2,label="SM")
             axes[i][j].set_xlabel(pd_variables[nvar])
             nvar= nvar+1            
             #axes[i][j].xaxis.grid(True, which="major")
