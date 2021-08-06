@@ -39,11 +39,13 @@ pd_variables = ['deltaetajj', 'deltaphijj', 'etaj1', 'etaj2', 'etal1', 'etal2',
        'met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
        'ptl2', 'ptll',"w"]#,'phij1', 'phij2', 'w']
 
+wilsonCoeff = "cW" #"cqq3" #"cW"
+
 dfAll = ROOT.RDataFrame("SSWW_SM","../ntuple_SSWW_SM.root")
 df = dfAll.Filter("ptj1 > 30 && ptj2 >30 && deltaetajj>2 && mjj>200")
-dfBSMAll_QUAD = ROOT.RDataFrame("SSWW_cW_QU","../ntuple_SSWW_cW_QU.root")
+dfBSMAll_QUAD = ROOT.RDataFrame("SSWW_"+wilsonCoeff+"_QU","../ntuple_SSWW_"+wilsonCoeff+"_QU.root")
 dfBSM_QUAD = dfBSMAll_QUAD.Filter("ptj1 > 30 && ptj2 >30 && deltaetajj>2 && mjj>200")
-dfBSMAll_LIN = ROOT.RDataFrame("SSWW_cW_LI","../ntuple_SSWW_cW_LI.root")
+dfBSMAll_LIN = ROOT.RDataFrame("SSWW_"+wilsonCoeff+"_LI","../ntuple_SSWW_"+wilsonCoeff+"_LI.root")
 dfBSM_LIN = dfBSMAll_LIN.Filter("ptj1 > 30 && ptj2 >30 && deltaetajj>2 && mjj>200")
 
 SM =pd.DataFrame.from_dict(df.AsNumpy(pd_variables))
@@ -62,6 +64,8 @@ for vars in ['met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
     All_BSM[vars] = All_BSM[vars].apply(np.log10)
     SM[vars] = SM[vars].apply(np.log10)
 
+
+    
 #Rescaling weights for the Wilson coefficient
 All_BSM["w"].loc["L"] = All_BSM["w"].loc["L"].to_numpy()*cW
 All_BSM["w"].loc["Q"] = All_BSM["w"].loc["Q"].to_numpy()*cW*cW
@@ -101,6 +105,21 @@ X_train = t.transform(X_train)
 X_test=t.transform(X_test)
 All_test = t.transform(All_test)
 
+
+#adding noise
+noiseFlag = True
+nvar = 0
+if noiseFlag:
+    mu, sigma =  0 , 0.1
+    for var in pd_variables:
+        if var != "w":
+                noise = np.random.normal(mu, sigma, len(w_test))
+                All_test[:,nvar]=All_test[:,nvar]+noise
+                noiseSM = np.random.normal(mu, sigma, len(wx_test))
+                X_test[:,nvar]=X_test[:,nvar]+noiseSM
+        nvar=nvar+1
+
+
 model = tf.keras.models.load_model(modelDir)
 mylosses = LossPerBatch()
 mylosses_train = LossPerBatch()
@@ -117,11 +136,12 @@ myloss_All = mylosses_All.eval_loss
 myloss =np.asarray(myloss)
 myloss_All = np.asarray(myloss_All)
 myloss_train =np.asarray(myloss_train)
-
-np.savetxt("lossSM_"+str(nameExtention)+"_"+str(cW)+".csv", myloss,delimiter=',')
-np.savetxt("lossBSM_"+str(nameExtention)+"_"+str(cW)+".csv", myloss_All,delimiter=',')
-np.savetxt("weight_BSM_"+str(nameExtention)+"_"+str(cW)+".csv",weight_test,delimiter=',')
-np.savetxt("weight_SM_"+str(nameExtention)+"_"+str(cW)+".csv",wx_test,delimiter=',')
+if noiseFlag:
+    nameExtention=nameExtention+"_noise_"+str(sigma)
+np.savetxt("lossSM_"+str(nameExtention)+"_"+wilsonCoeff+"_"+str(cW)+".csv", myloss,delimiter=',')
+np.savetxt("lossBSM_"+str(nameExtention)+"_"+wilsonCoeff+"_"+str(cW)+".csv", myloss_All,delimiter=',')
+np.savetxt("weight_BSM_"+str(nameExtention)+"_"+wilsonCoeff+"_"+str(cW)+".csv",weight_test,delimiter=',')
+np.savetxt("weight_SM_"+str(nameExtention)+"_"+wilsonCoeff+"_"+str(cW)+".csv",wx_test,delimiter=',')
 #print "Eff All = ", 1.*(myloss_All>cutLoss).sum()/len(myloss_All)
 #print "Eff SM = ",1.*(myloss>cutLoss).sum()/len(myloss)
 ax = plt.figure(figsize=(7,5), dpi=100, facecolor="w").add_subplot(111)
@@ -153,16 +173,37 @@ ncols = 4
 for i in range(nrows):
     for j in range(ncols):
         if nvar < len(pd_variables)-1:                       
-            axes[i][j].hist(out_SM[0:,nvar],bins=bins, density=1,weights= wx_test,range=[0.,2.],histtype="step",color="red",alpha=0.3,linewidth=1,label="SM Output")                                    
-            axes[i][j].hist(X_test[0:,nvar],bins=bins, density=1,weights= wx_test,range=[0.,2.],histtype="step",color="blue",alpha=0.3,linewidth=1,label="SM Input")                                    
+            axes[i][j].hist(out_SM[0:,nvar],bins=bins, density=1,weights= wx_test,range=[-0.2,1.2],histtype="step",color="red",alpha=0.6,linewidth=2,label="SM Output")                                    
+            axes[i][j].hist(X_test[0:,nvar],bins=bins, density=1,weights= wx_test,range=[-0.2,1.2],histtype="step",color="blue",alpha=0.6,linewidth=2,label="SM Input")                                    
             axes[i][j].set_xlabel(pd_variables[nvar]) 
             #axes[i][j].legend()                       
-            #axes[i][j].set_xlim(xmin =-0.1,xmax=1.1)            
+            axes[i][j].set_xlim(xmin =-0.2,xmax=1.2)            
             #axes[i][j].set_ylim(ymin =-0.1,ymax=1.1)            
             nvar=nvar+1
             #axes[i][j].set_yscale('log')
 plt.rc('legend',fontsize='xx-small')    
-plt.savefig(str(sys.argv[1])+".pdf")
+plt.savefig(str(sys.argv[1])+"_SM.pdf")
+#plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+#plt.legend()
+
+fig, axes = plt.subplots(nrows=4,ncols=4)
+fig.patch.set_facecolor("w")
+nvar = 0
+nrows = 4
+ncols = 4
+for i in range(nrows):
+    for j in range(ncols):
+        if nvar < len(pd_variables)-1:                       
+            axes[i][j].hist(out[0:,nvar],bins=bins, density=1,weights= w_test,range=[-0.2,1.2],histtype="step",color="orange",alpha=0.6,linewidth=2,label="BSM Output")                                    
+            axes[i][j].hist(All_test[0:,nvar],bins=bins, density=1,weights= w_test,range=[-0.2,1.2],histtype="step",color="green",alpha=0.6,linewidth=2,label="BSM Input")                                    
+            axes[i][j].set_xlabel(pd_variables[nvar]) 
+            #axes[i][j].legend()                       
+            axes[i][j].set_xlim(xmin =-0.2,xmax=1.2)            
+            #axes[i][j].set_ylim(ymin =-0.1,ymax=1.1)            
+            nvar=nvar+1
+            #axes[i][j].set_yscale('log')
+plt.rc('legend',fontsize='xx-small')    
+plt.savefig(str(sys.argv[1])+"_BSM.pdf")
 #plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 #plt.legend()
 
