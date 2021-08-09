@@ -113,10 +113,14 @@ if noiseFlag:
     mu, sigma =  0 , 0.1
     for var in pd_variables:
         if var != "w":
-                noise = np.random.normal(mu, sigma, len(w_test))
-                All_test[:,nvar]=All_test[:,nvar]+noise
-                noiseSM = np.random.normal(mu, sigma, len(wx_test))
-                X_test[:,nvar]=X_test[:,nvar]+noiseSM
+                for i in range(len(w_test)):
+                    sigmaBSM = sigma * np.abs(All_test[i,nvar])                    
+                    noise = np.random.normal(mu, sigmaBSM, 1)
+                    All_test[i,nvar]=All_test[i,nvar]+noise
+                for i in range(len(wx_test)):
+                    sigmaSM = sigma * np.abs(X_test[i,nvar])
+                    noiseSM = np.random.normal(mu, sigmaSM, 1)                                       
+                    X_test[i,nvar]=X_test[i,nvar]+noiseSM
         nvar=nvar+1
 
 
