@@ -230,4 +230,22 @@ for i in range(nrows):
 plt.rc('legend',fontsize='xx-small')
 #plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 #plt.legend()
+#plt.show()
+
+model = tf.keras.models.load_model("latent_test_newModelDimenstions_MinMaxScaler_20_10_7_3_50")
+bins = 100
+latent_SM = model.predict(X_test)
+latent_BSM = model.predict(All_test)
+fig, axes = plt.subplots(nrows=1,ncols=3)
+fig.patch.set_facecolor("w")
+ncols = 3
+for i in range(ncols):
+    axes[i].hist(latent_SM[0:,i],bins=bins, density=1,weights= wx_test,histtype="step",color="red",alpha=0.6,linewidth=2,label="SM Latent")                                    
+    axes[i].hist(latent_BSM[0:,i],bins=bins, density=1,weights= weight_test,histtype="step",color="blue",alpha=0.6,linewidth=2,label="BSM Latent")                                    
+    #axes[i][j].set_xlim(xmin =-0.2,xmax=1.2)            
+    #axes[i][j].set_ylim(ymin =-0.1,ymax=1.1)            
+plt.rc('legend',fontsize='xx-small')    
+#plt.savefig(str(sys.argv[1])+"_SM.pdf")
+#plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.legend()
 plt.show()

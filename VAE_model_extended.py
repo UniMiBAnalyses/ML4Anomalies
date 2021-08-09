@@ -125,17 +125,16 @@ class VariationalAutoEncoder(tf.keras.Model):
 
 class LatentSpace(tf.keras.Model):
     """Combines the encoder and decoder into an end-to-end model for training."""
-
     def __init__(self,
                intermediate_dim=50,
                input_dim=20,
                half_input=10,
-               latent_dim=5, 
+               latent_dim=5,  
                name='latentspace',
                **kwargs):
-        super(LatentSpace, self).__init__(name=name, **kwargs)
-        self.original_dim = original_dim
-        self.encoder = Encoder(intermediate_dim=intermediate_dim,
+        super(LatentSpace, self).__init__(name=name, **kwargs)        
+        self.encoder = Encoder(
+               intermediate_dim=intermediate_dim,
                input_dim=input_dim,
                half_input=half_input,
                latent_dim=latent_dim)
