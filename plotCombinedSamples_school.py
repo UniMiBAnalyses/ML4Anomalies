@@ -158,7 +158,7 @@ for i in range(nrows):
         if nvar < len(pd_variables)-1:                       
             axes[i][j].hist(diffBSM[0:,nvar],bins=bins, density=1,weights= weight_test,range=[-1.1,1.1],histtype="step",color="red",alpha=0.6,linewidth=1,label="BSM")                        
             #axes[i][j].scatter(diffBSM[0:,nvar],All[0:,nvar],c="blue",alpha=0.3,s=4,linewidths=0.5,label="BSM")                        
-        
+    
             #axes[i][j].hist(out[0:,nvar],bins=bins,density=1,range=[-0.1,1.1],weights = weights_all,histtype="step",color="orange",alpha=0.3,linewidth=1,label="BSM OUT")
             axes[i][j].hist(diffSM[0:,nvar],bins=bins, density=1,weights= wx_test,range=[-1.1,1.1],histtype="step",color="blue",alpha=0.6,linewidth=1,label="SM")                        
             #axes[i][j].scatter(diffSM[0:,nvar],X_test[0:,nvar],c="red",alpha=0.3,s=4,linewidths=0.5,label="SM")                        
