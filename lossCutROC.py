@@ -98,7 +98,7 @@ ax.yaxis.grid(True, which="major")
 plt.style.use('seaborn-whitegrid')
 plt.plot(lossBSM4,lossBSM3,'o', color='blue',alpha = 0.1)
 plt.plot(lossSM4,lossSM3,'o', color='red',alpha = 0.1)
-plt.show()
+#plt.show()
 
 ax = plt.figure(figsize=(7,5), dpi=100,facecolor="w").add_subplot(111)
 ax.xaxis.grid(True, which="minor")
