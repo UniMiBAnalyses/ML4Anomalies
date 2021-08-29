@@ -30,7 +30,7 @@ df = dfAll.Filter("ptj1 > 30 && ptj2 >30 && deltaetajj>2 && mjj>200")
 
 
 npy = df.AsNumpy(pd_variables)
-wSM = df.AsNumpy("w")
+wSM = df.AsNumpy(["w"])
 npd =pd.DataFrame.from_dict(npy)
 wpdSM = pd.DataFrame.from_dict(wSM)
 nEntries = 1000000
