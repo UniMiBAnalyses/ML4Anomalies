@@ -21,8 +21,8 @@ df = dfAll.Filter("ptj1 > 30 && ptj2 >30 && deltaetajj>2 && mjj>200")
 
 npy = df.AsNumpy(pd_variables)
 npd =pd.DataFrame.from_dict(npy)
-nEntries = 1000000
-npd = npd.head(nEntries*2)
+nEntries = 10000
+npd = npd.head(nEntries)
 #to be done for all the pt and mass and met variables
 for vars in ['met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
        'ptl2', 'ptll']:
@@ -40,13 +40,13 @@ n_inputs = npd.shape[1]
 original_dim = n_inputs
 latent_dim = 7
 intermediate_dim = 14
-numberOfEpochs = 100
+numberOfEpochs = 5
 vae = VariationalAutoEncoder(original_dim, 2*original_dim, latent_dim,intermediate_dim)  
 vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005),  loss=tf.keras.losses.MeanSquaredError())
 hist = vae.fit(X_train,X_train, epochs=numberOfEpochs, batch_size = 32, validation_data=(X_test, X_test))
 
-tf.keras.models.save_model(vae,'test_vaemodel_school'+str(numberOfEpochs)+"Epochs")
-numpy.savetxt("test_vaemodel_school_loss"+str(numberOfEpochs)+"Epochs.csv", hist.history["loss"],delimiter=',')
+tf.keras.models.save_model(vae,'test_school'+str(numberOfEpochs)+"Epochs")
+numpy.savetxt("test_school_loss"+str(numberOfEpochs)+"Epochs.csv", hist.history["loss"],delimiter=',')
 
 encoder = LatentSpace(original_dim, 2*original_dim, latent_dim, intermediate_dim)
 encoder.predict(X_test)

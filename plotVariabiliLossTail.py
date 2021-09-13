@@ -103,9 +103,9 @@ ncols = 4
 for i in range(nrows):
     for j in range(ncols):
         if nvar < len(pd_variables):
-            axes[i][j].hist(myEvents[0:,nvar],bins=300,range=[-0.1,1.1],histtype="step",color="red",alpha=0.5,linewidth=2,label="Loss > 0.00004")
+            axes[i][j].hist(myEvents[0:,nvar],bins=300,density=1,range=[-0.1,1.1],histtype="step",color="red",alpha=0.5,linewidth=2,label="Loss > 0.00004")
             #axes[i][j].hist(output[0:,nvar],bins=300,range=[-0.1,1.1],histtype="step",color="orange",alpha=0.5,linewidth=2,label="Output BSM")
-            axes[i][j].hist(npdBSM[0:,nvar],bins=300,range=[-0.1,1.1],histtype="step",color="blue",alpha=0.5,linewidth=2,label="BSM")
+            axes[i][j].hist(npdBSM[0:,nvar],bins=300,density=1,range=[-0.1,1.1],histtype="step",color="blue",alpha=0.5,linewidth=2,label="BSM")
             #axes[i][j].hist(X_test[0:,nvar],bins=300,range=[-0.1,1.1],histtype="step",color="green",alpha=0.5,linewidth=2,label="SM")
             axes[i][j].set_xlabel(pd_variables[nvar])
             nvar= nvar+1            
