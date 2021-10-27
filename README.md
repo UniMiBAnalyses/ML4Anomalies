@@ -1,5 +1,5 @@
 # ML4Anomalies
-Some useful references on the topic:  
+**Some useful references on the topic:**  
 
 On VAEs:
 * https://keras.io/examples/generative/vae/
@@ -10,7 +10,7 @@ On VAEs:
 On VAEs for anomaly detection in HEP:
 * https://arxiv.org/pdf/1312.6114.pdf
 
-**Some additional tests for anomaly detection:**
+Some additional tests for anomaly detection:
 
 Keras:
 Generic Keras setup and playground  
