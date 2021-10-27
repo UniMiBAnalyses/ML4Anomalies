@@ -44,22 +44,29 @@ t.fit(X_train)
 X_train = t.transform(X_train)
 X_test = t.transform(X_test)
 ```
-
+Setting the parameters of the model:
+```python
+intermediate_dim = 20 #50 by default
+input_dim = 10 #was 20 in default
+half_input = 7 #was 20 in the newTest
+latent_dim = 3
+epochs = 50
+```
 Training the model:
 ```python
 # whole model
-vae = VariationalAutoEncoder(original_dim, latent_dim) # (self, original, latent)
-vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005), loss=tf.keras.losses.MeanSquaredError())
-hist = vae.fit(X_train, X_train, epochs = n_epochs, batch_size = batch)
+vae = VariationalAutoEncoder(original_dim,intermediate_dim,input_dim,half_input,latent_dim)  
+vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005),  loss=tf.keras.losses.MeanSquaredError())
+hist = vae.fit(X_train,X_train, epochs=epochs, batch_size = 32)
 ```
 ```python
 # encoder
-encoder = LatentSpace(original_dim, latent_dim) # (self, original, latent)
+encoder = LatentSpace(intermediate_dim,input_dim,half_input,latent_dim)
 z = encoder.predict(X_train)
 ```
 Saving the model:
 ```python
-tf.keras.models.save_model(encoder, enc_name) 
-tf.keras.models.save_model(vae, vae_name)
-np.savetxt(csv_name, hist.history["loss"], delimiter=',')
+tf.keras.models.save_model(encoder,'latent_test_newModelDimenstions_MinMaxScaler_'+str(intermediate_dim)+"_"+str(input_dim)+"_"+str(half_input)+"_"+str(latent_dim)+"_"+str(epochs))
+tf.keras.models.save_model(vae,'vae_test_newModelDimenstions_MinMaxScaler_'+str(intermediate_dim)+"_"+str(input_dim)+"_"+str(half_input)+"_"+str(latent_dim)+"_"+str(epochs))
+numpy.savetxt("lossAE_test_newModelDimenstions_MinMaxScaler_"+str(intermediate_dim)+"_"+str(input_dim)+"_"+str(half_input)+"_"+str(latent_dim)+"_"+str(epochs)+".csv", hist.history["loss"],delimiter=',')
 ```
