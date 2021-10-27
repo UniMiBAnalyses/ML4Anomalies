@@ -25,7 +25,7 @@ npd =pd.DataFrame.from_dict(npy)
 wSM = df.AsNumpy("w")
 wpdSM = pd.DataFrame.from_dict(wSM)
 ```
-Splitting the data into train and test dataset:
+Splitting the data into train and test datasets:
 ```python
 X_train, X_test, y_train, y_test = train_test_split(npd, npd, test_size=0.2, random_state=1)
 wx_train, wx_test, wy_train, wy_test = train_test_split(wpdSM, wpdSM, test_size=0.2, random_state=1)
