@@ -7,7 +7,7 @@ Importing the model:
 ```python
 from VAEmodel import * # where the chosen model is VAEmodel.py
 ```
-Saving the data and applying cuts to some variables:
+Saving the data and applying cuts on some of the variables:
 ```python
 # selecting the variables used for the training
 pd_variables = ['deltaetajj', 'deltaphijj', 'etaj1', 'etaj2', 'etal1', 'etal2',
