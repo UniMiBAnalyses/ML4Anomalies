@@ -48,20 +48,17 @@ X_test = t.transform(X_test)
 Training the model:
 ```python
 # whole model
-vae = VariationalAutoEncoder(original_dim, DIM) # (self, original, latent)
+vae = VariationalAutoEncoder(original_dim, latent_dim) # (self, original, latent)
 vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005), loss=tf.keras.losses.MeanSquaredError())
-hist = vae.fit(X_train, X_train, epochs=EPOCHS, batch_size = BATCH)
+hist = vae.fit(X_train, X_train, epochs = n_epochs, batch_size = batch)
 ```
 ```python
 # encoder
-encoder = LatentSpace(original_dim, DIM) # (self, original, latent)
+encoder = LatentSpace(original_dim, latent_dim) # (self, original, latent)
 z = encoder.predict(X_train)
 ```
 Saving the model:
 ```python
-enc_name = "myenc{}_denselayers_latentdim{}_epoch{}_batchsize{}_log_eventFiltered".format(MODEL, DIM, EPOCHS, BATCH)
-vae_name = "myvae{}_denselayers_latentdim{}_epoch{}_batchsize{}_log_eventFiltered".format(MODEL, DIM, EPOCHS, BATCH)
-csv_name = "myloss{}_training_latentdim{}_epoch{}_batchsize{}_log_eventFiltered.csv".format(MODEL, DIM, EPOCHS, BATCH)
 tf.keras.models.save_model(encoder, enc_name) 
 tf.keras.models.save_model(vae, vae_name)
 np.savetxt(csv_name, hist.history["loss"], delimiter=',')
