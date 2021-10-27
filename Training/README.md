@@ -2,21 +2,22 @@
 
 ## training.py 
 Trains the model and saves the encoder and the VAE model, together with a .csv file containing the values of the losses per epoch.  
-Dimension of the latent space, number of epochs, batch size and learning rate of the optimizer can be modified here.
 
 Importing the model:
 ```python
-from VAEmodel import * # imports the chosen model
-MODEL = 1 # name of the model
+from VAEmodel import * # where the chosen model is VAEmodel.py
 ```
-Saving the data:
+Saving the data and applying cuts to some variables:
 ```python
 # selecting the variables used for the training
 pd_variables = ['deltaetajj', 'deltaphijj', 'etaj1', 'etaj2', 'etal1', 'etal2',
        'met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
        'ptl2', 'ptll']#,'phij1', 'phij2', 'w']
-dfAll = ROOT.RDataFrame("SSWW_SM","/gwpool/users/glavizzari/Downloads/ntuple_SSWW_SM.root")
-df = dfAll.Filter("ptj1 > 30 && ptj2 >30 && deltaetajj>2 && mjj>200")
+dfAll = ROOT.RDataFrame("SSWW_SM","../ntuple_SSWW_SM.root")
+
+# cuts
+df = dfAll.Filter("ptj1 > 30 && ptj2 >30 && deltaetajj>2 && mjj>200") 
+
 npy = df.AsNumpy(pd_variables)
 npd =pd.DataFrame.from_dict(npy)
 
@@ -24,7 +25,7 @@ npd =pd.DataFrame.from_dict(npy)
 wSM = df.AsNumpy("w")
 wpdSM = pd.DataFrame.from_dict(wSM)
 ```
-Splitting the data:
+Splitting the data into train and test dataset:
 ```python
 X_train, X_test, y_train, y_test = train_test_split(npd, npd, test_size=0.2, random_state=1)
 wx_train, wx_test, wy_train, wy_test = train_test_split(wpdSM, wpdSM, test_size=0.2, random_state=1)
@@ -43,12 +44,7 @@ t.fit(X_train)
 X_train = t.transform(X_train)
 X_test = t.transform(X_test)
 ```
-Setting the parameters of the model:
-```python
-DIM = sys.argv[1] #latent dimension
-BATCH = 32 #batch size
-EPOCHS = 200 #number of epochs
-```
+
 Training the model:
 ```python
 # whole model
