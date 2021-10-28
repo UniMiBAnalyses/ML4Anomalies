@@ -3,6 +3,7 @@
 
 * On VAEs:
     * https://keras.io/examples/generative/vae/
+    * https://www.tensorflow.org/guide/keras/custom_layers_and_models
     * https://towardsdatascience.com/understanding-variational-autoencoders-vaes-f70510919f73
     * https://arxiv.org/abs/1811.10276
     * https://arxiv.org/pdf/1906.02691.pdf  
