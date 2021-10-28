@@ -1,9 +1,10 @@
 # VAE models
 This folder contains the trainable VAE models.  
-The following scheme represents the model **VAE_model_extended.py** and is the architecture that gave the best performance so far.
+The following scheme represents the model **VAE_model_extended.py** and it represents the architecture that gave the best performance so far.
 ![Alt Text](https://github.com/GiuliaLavizzari/ML4Anomalies/blob/50f243532b371ced4eab8769c03343e20e59d69e/VAEmodel/VAE_ML4Anomalies.png)
 
 ## VAE_model_extended.py
+
 
 ## VAE_model.py
 
