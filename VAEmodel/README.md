@@ -39,10 +39,15 @@ Note that the KLD is multiplied by a scaling factor << 1, which means that recon
 
 
 ## VAE_model.py
+This model is build as the previous one. However, the structure of encoder and decoder is changed: the number and size of the layers is different than in the previous case.
 
 ## VAE_new_model.py
-Encoder and decoder together (you need this to run some of the shap stuff)
-
+In this model, encoder and decoder are not defined as separate objects: indeed, the Variational AutoEncoder class (tf.keras.Model) comprises several layers including those that form the encoder and those forming the decoder.  
+This is particularly useful when using tools that need to access some specific layers of the model, e.g.:
+```python
+# from testSHAP4AE_new.py
+model.get_layer('encoder_l1').set_weights([updated_weights, weights[:][1]])
+```
 ## test_AE.py
 
 ## test_VAE.py
