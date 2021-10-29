@@ -50,7 +50,7 @@ X_test = t.transform(X_test)
 MinMaxScaler() scales the data within the range [0,1]. Note that the same scaling will be applied on all the data samples: X_train, X_test and the LIN and QUAD samples. This means that in all cases except X_train the values will outrange the [0,1] interval by a little. This has consequences in terms of the choice of the activation function of the last layer of the decoder, which directly determines the output (see VAE_model_extended.py).
 
 
-**Setting the parameters of the model:**
+**Setting the parameters of the model:**  
 This allows to define the dimensions of the layers in the model.
 ```python
 intermediate_dim = 20 #50 by default
