@@ -95,3 +95,13 @@ myloss =np.asarray(myloss)
 
 ## PlotVariabiliLossTail.py
 Plots variables that show high reconstruction error: indeed, the Mean Squared Error between input and output is computed. The events that show an MSE value which is larger than a threshold value are selected and plotted
+
+
+## lossCutROC.py
+Given the weights and losses per event computed by plotCombinedSamples.py, it computes and plots the ROC curves (the SM efficiency vs BSM efficiency) and plots the loss function.  
+The efficiencies are computed as:  
+* effSM = sumWSM*/sumWSM
+* effBSM = sumWBSM*/sumWBSM  
+
+where *sum* stands for the sum of the weights of all the SM (BSM) events, while *sum* * stands for sum of the weights of the BSM=SM+EFT events whose loss exceeds a chosen threshold value (cut)
+
