@@ -31,9 +31,41 @@ Plots:
 
 It also allows for adding a gaussian noise to the input variables.  
 
-**Combining the samples**
+**Combining the samples**  
 The SM test sample and the LIN and QUAD samples can be combined as follows:  
-First, all the samples are uploaded and cuts and logarithms are applied. The LIN and QUAD samples are then merged in the All_BSM sample. The SM sample is split as usual into X_test and X_train. X_train is then used to compute the scaling factor, which is then applied to all the samples. Eventually, X_test and All_BSM are merged. The resulting dataset contains both SM and EFT contributions.
+First, all the samples are uploaded and cuts and logarithms are applied. The LIN and QUAD samples are then merged in the All_BSM sample. The SM sample is split as usual into X_test and X_train. X_train is then used to compute the scaling factor, which is then applied to all the samples. Eventually, X_test and All_BSM are merged. The resulting dataset contains both SM and EFT contributions. 
+```python
+All_BSM = pd.concat([BSM_quad, BSM_lin], keys=['Q','L'])
+X_train, X_test, y_train, y_test = train_test_split(SM,SM,test_size=0.2, random_state=1)
+All_test = np.concatenate((All_BSM, X_test))
+```
+**Weights:** Note that the weights of the EFT samples need to be scaled by the wilson coefficient cW and all the weights have to be rescaled by a normalization factor:
+```python
+All_BSM["w"].loc["L"] = All_BSM["w"].loc["L"].to_numpy()*cW
+All_BSM["w"].loc["Q"] = All_BSM["w"].loc["Q"].to_numpy()*cW*cW
+```
+```python
+# Normalization factor: SM sample
+luminosity = 1000.*350. #luminosity expected in 1/pb
+fSM = ROOT.TFile("/gwpool/users/glavizzari/Downloads/ntuple_SSWW_SM.root")
+hSM = fSM.Get("SSWW_SM_nums")
+xsecSM = hSM.GetBinContent(1)
+sumwSM = hSM.GetBinContent(2)
+normSM = 5.* xsecSM * luminosity / (sumwSM) # on test set (0.2*total)
 
+# Normalization factor: LIN sample
+fLIN = ROOT.TFile("/gwpool/users/glavizzari/Downloads/ntuplesBSM/ntuple_SSWW_"+str(op)+"_LI.root")
+hLIN = fLIN.Get("SSWW_"+str(op)+"_LI_nums")
+xsecLIN = hLIN.GetBinContent(1)
+sumwLIN = hLIN.GetBinContent(2)
+normLIN = xsecLIN * luminosity / (sumwLIN)
 
+# Normalization factor: QUAD sample
+fQUAD = ROOT.TFile("/gwpool/users/glavizzari/Downloads/ntuplesBSM/ntuple_SSWW_"+str(op)+"_QU.root")
+hQUAD = fQUAD.Get("SSWW_"+str(op)+"_QU_nums")
+xsecQUAD = hQUAD.GetBinContent(1)
+sumwQUAD = hQUAD.GetBinContent(2)
+normQUAD = xsecQUAD * luminosity / (sumwQUAD)
+
+```
 
