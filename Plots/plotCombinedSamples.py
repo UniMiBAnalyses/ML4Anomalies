@@ -105,7 +105,7 @@ X_train = t.transform(X_train)
 X_test=t.transform(X_test)
 All_test = t.transform(All_test)
 
-
+###################################
 #adding noise
 noiseFlag = True
 nvar = 0
@@ -123,6 +123,10 @@ if noiseFlag:
                     X_test[i,nvar]=X_test[i,nvar]+noiseSM
         nvar=nvar+1
 
+
+        
+###################################
+# computing and plotting the loss
 
 model = tf.keras.models.load_model(modelDir)
 mylosses = LossPerBatch()
@@ -159,6 +163,9 @@ plt.legend()
 
 ax.patch.set_facecolor("w")
 
+###################################
+# plotting in and out (SM)
+
 t = MinMaxScaler()
 t.fit(SM)
 SM = t.transform(SM)
@@ -190,6 +197,9 @@ plt.savefig(str(sys.argv[1])+"_SM.pdf")
 #plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 #plt.legend()
 
+###################################
+# plotting in and out (BSM)
+
 fig, axes = plt.subplots(nrows=4,ncols=4)
 fig.patch.set_facecolor("w")
 nvar = 0
@@ -211,6 +221,10 @@ plt.savefig(str(sys.argv[1])+"_BSM.pdf")
 #plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 #plt.legend()
 
+
+###################################
+#plotting the difference: in - out
+
 fig, axes = plt.subplots(nrows=4,ncols=4)
 fig.patch.set_facecolor("w")
 nvar = 0
@@ -231,6 +245,9 @@ plt.rc('legend',fontsize='xx-small')
 #plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 #plt.legend()
 #plt.show()
+
+###################################
+# plotting latent distributions
 
 model = tf.keras.models.load_model("latent_test_newModelDimenstions_MinMaxScaler_20_10_7_3_50")
 bins = 100
