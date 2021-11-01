@@ -91,3 +91,7 @@ model.evaluate(X_test,X_test,batch_size=1,callbacks=[mylosses],verbose=0)
 myloss = mylosses.eval_loss
 myloss =np.asarray(myloss)
 ```
+
+
+## PlotVariabiliLossTail.py
+Plots variables that show high reconstruction error: indeed, the Mean Squared Error between input and output is computed. The events that show an MSE value which is larger than a threshold value are selected and plotted
