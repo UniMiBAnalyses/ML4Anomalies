@@ -23,11 +23,22 @@ Some tests for anomaly detection for de/dx based analysis
 * https://github.com/amassiro/ML4Anomalies
 
 
-## VAEmodel
-Contains the VAE model and the script that runs the training.
+## Contents:
+### VAEmodel 
+Contains the VAE models used.
 
-## Plots
-Contains tools to plot input and output variables, latent variables, the correlation matrix and ROC curves (which gives a measure of the efficiency of te anomaly detection).
+### Training  
+Contains the script that runs the training of the VAE models.
 
-## BSM analysis
-Contains tools to perform the anomaly detection.
+### Plots  
+Contains tools to plot input and output variables, latent variables, correlation matrix and ROC curves.
+
+### SHAP  
+Contains tools to understand which features are contributing the most to the loss of the model.
+
+### Trained models:
+vae_batch16_newModelDimenstions_MinMaxScaler_20_10_7_3_100  
+vae_test_newModelDimenstions_MinMaxScaler_20_10_7_3_100    
+vae_test_newModelDimenstions_MinMaxScaler_30_20_10_5_100 
+
+
