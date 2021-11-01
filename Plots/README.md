@@ -31,6 +31,18 @@ Plots:
 
 It also allows for adding a gaussian noise to the input variables.  
 
+### Noise
+The smearing of the distributions is obtained by adding to each variable value of each event a noise factor, which is sampled from a gaussian distribution with zero mean and variance equal to the value of the variable itself, multiplied by 0.1.
+```python
+mu, sigma =  0 , 0.1
+for var in pd_variables:
+    if var != "w":
+        for i in range(len(w_test)):
+            sigmaBSM = sigma * np.abs(All_test[i,nvar])                    
+            noise = np.random.normal(mu, sigmaBSM, 1)
+            All_test[i,nvar]=All_test[i,nvar]+noise
+    nvar=nvar+1
+```
 
 ### Combining the samples  
 The SM test sample and the LIN and QUAD samples can be combined as follows:  
