@@ -27,6 +27,7 @@ Plots:
 * Value of the loss function for the single events
 * Input and output distributions (SM test sample)
 * Input and output distributions (BSM sample = SM test + LIN + QUAD)
+* Difference between input and output distributions
 * Latent distributions (both for the SM alone and the whole BSM sample)  
 
 It also allows for adding a gaussian noise to the input variables.  
