@@ -37,8 +37,11 @@ self.add_loss(kl_loss)
 ```
 Note that the KLD is multiplied by a scaling factor << 1, which means that reconstruction is favoured over regularization during the training. This factor was chosen as the one that gave the smallest value of the total training loss.
 
-## VAE_model.py
+## VAE_model2.py
 This model is built as the previous one. However, the structure of encoder and decoder is changed: the number and size of the layers is different than in the previous case.
+
+## VAE_model3.py
+Another possible model structure. Besides having different number and size of layers (128-64-32-latent-32-64-128), this model also employs a weight initializer (tf.keras.initializers.he_normal()) and uses a linear function as the activation function on the last layer of the decoder.
 
 ## VAE_new_model.py
 In this model, encoder and decoder are not defined as separate objects: indeed, the Variational AutoEncoder class (tf.keras.Model) comprises several layers including those that form the encoder and those forming the decoder.  
