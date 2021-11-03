@@ -113,7 +113,7 @@ sumwQUAD = hQUAD.GetBinContent(2)
 normQUAD = xsecQUAD * luminosity / (sumwQUAD)
 ```
 
-The significance sigma is computed as the number of EFT (LIN + QUAD) events whose loss is bigger than a selected threshold, divided by the square root of the number of SM events above the same threshold. This is the chosen figure of merit to compare the sensitivity of different VAE models to a particular operator.  
+The **significance** sigma is computed as the number of EFT (LIN + QUAD) events whose loss is bigger than a selected threshold, divided by the square root of the number of SM events above the same threshold. This is the chosen figure of merit to compare the sensitivity of different VAE models to a particular operator.  
 The error on sigma due to the fluctuations of the number of events in the Monte Carlo samples is also computed.  
 
-It's also possible to compute the minimum value of the wilson coefficient for which the analysis is sensitive to the EFT operator (where sensitivity is defined as having at least one value of sigma>3).
+It's also possible to compute the **minimum value of the wilson coefficient** for which the analysis is sensitive to the EFT operator (where sensitivity is defined as having at least one value of sigma>3).
