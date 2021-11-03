@@ -81,3 +81,10 @@ tf.keras.models.save_model(encoder,'latent_test_newModelDimenstions_MinMaxScaler
 tf.keras.models.save_model(vae,'vae_test_newModelDimenstions_MinMaxScaler_'+str(intermediate_dim)+"_"+str(input_dim)+"_"+str(half_input)+"_"+str(latent_dim)+"_"+str(epochs))
 numpy.savetxt("lossAE_test_newModelDimenstions_MinMaxScaler_"+str(intermediate_dim)+"_"+str(input_dim)+"_"+str(half_input)+"_"+str(latent_dim)+"_"+str(epochs)+".csv", hist.history["loss"],delimiter=',')
 ```
+
+
+## test_AE.py
+This allows for building and training an AE model.
+
+## test_VAE.py
+This allows for building and training a VAE model.
