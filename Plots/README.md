@@ -55,33 +55,10 @@ All_BSM = pd.concat([BSM_quad, BSM_lin], keys=['Q','L'])
 X_train, X_test, y_train, y_test = train_test_split(SM,SM,test_size=0.2, random_state=1)
 All_test = np.concatenate((All_BSM, X_test))
 ```
-**Weights:** Note that the weights of the EFT samples need to be scaled by the wilson coefficient cW and all the weights should be rescaled by a normalization factor:
+**Weights:** Note that the weights of the EFT samples need to be scaled by the wilson coefficient cW:
 ```python
 All_BSM["w"].loc["L"] = All_BSM["w"].loc["L"].to_numpy()*cW
 All_BSM["w"].loc["Q"] = All_BSM["w"].loc["Q"].to_numpy()*cW*cW
-```
-```python
-# Normalization factor: SM sample
-luminosity = 1000.*350. #luminosity expected in 1/pb
-fSM = ROOT.TFile("/gwpool/users/glavizzari/Downloads/ntuple_SSWW_SM.root")
-hSM = fSM.Get("SSWW_SM_nums")
-xsecSM = hSM.GetBinContent(1)
-sumwSM = hSM.GetBinContent(2)
-normSM = 5.* xsecSM * luminosity / (sumwSM) # on test set (0.2*total)
-
-# Normalization factor: LIN sample
-fLIN = ROOT.TFile("/gwpool/users/glavizzari/Downloads/ntuplesBSM/ntuple_SSWW_"+str(op)+"_LI.root")
-hLIN = fLIN.Get("SSWW_"+str(op)+"_LI_nums")
-xsecLIN = hLIN.GetBinContent(1)
-sumwLIN = hLIN.GetBinContent(2)
-normLIN = xsecLIN * luminosity / (sumwLIN)
-
-# Normalization factor: QUAD sample
-fQUAD = ROOT.TFile("/gwpool/users/glavizzari/Downloads/ntuplesBSM/ntuple_SSWW_"+str(op)+"_QU.root")
-hQUAD = fQUAD.Get("SSWW_"+str(op)+"_QU_nums")
-xsecQUAD = hQUAD.GetBinContent(1)
-sumwQUAD = hQUAD.GetBinContent(2)
-normQUAD = xsecQUAD * luminosity / (sumwQUAD)
 ```
 
 
@@ -111,7 +88,30 @@ where *sum* stands for the sum of the weights of all the SM (BSM) events, while 
 ## plotSigma.py
 This script employs the losses and weights computed by means of the loss_per_batch class and plots the loss function, computes the significance sigma and the minimum value of the wilson coefficient for which the VAE model is sensitive to the EFT operator.  
 
-First, the weights need to be correctly normalized (note that the weights taken as an input are expected to be neither scaled by a normalization factor nor scaled by the wilson coefficients yet). The correct normalization of the events is given by the previously described factor (normSM, normLIN, normQUAD), that is to be multiplied to the weights of the events (together with the cW and cW^2 coefficients in the cases of the EFT events).  
+First, the weights need to be correctly normalized (note that the weights taken as an input are expected to be neither scaled by a normalization factor nor scaled by the wilson coefficients yet). The correct normalization of the events is given by the following factor, that is to be multiplied to the weights of the events (together with the cW and cW^2 coefficients in the cases of the EFT events).  
+```python
+# Normalization factor: SM sample
+luminosity = 1000.*350. #luminosity expected in 1/pb
+fSM = ROOT.TFile("/gwpool/users/glavizzari/Downloads/ntuple_SSWW_SM.root")
+hSM = fSM.Get("SSWW_SM_nums")
+xsecSM = hSM.GetBinContent(1)
+sumwSM = hSM.GetBinContent(2)
+normSM = 5.* xsecSM * luminosity / (sumwSM) # on test set (0.2*total)
+
+# Normalization factor: LIN sample
+fLIN = ROOT.TFile("/gwpool/users/glavizzari/Downloads/ntuplesBSM/ntuple_SSWW_"+str(op)+"_LI.root")
+hLIN = fLIN.Get("SSWW_"+str(op)+"_LI_nums")
+xsecLIN = hLIN.GetBinContent(1)
+sumwLIN = hLIN.GetBinContent(2)
+normLIN = xsecLIN * luminosity / (sumwLIN)
+
+# Normalization factor: QUAD sample
+fQUAD = ROOT.TFile("/gwpool/users/glavizzari/Downloads/ntuplesBSM/ntuple_SSWW_"+str(op)+"_QU.root")
+hQUAD = fQUAD.Get("SSWW_"+str(op)+"_QU_nums")
+xsecQUAD = hQUAD.GetBinContent(1)
+sumwQUAD = hQUAD.GetBinContent(2)
+normQUAD = xsecQUAD * luminosity / (sumwQUAD)
+```
 
 The significance sigma is computed as the number of EFT (LIN + QUAD) events whose loss is bigger than a selected threshold, divided by the square root of the number of SM events above the same threshold. This is the chosen figure of merit to compare the sensitivity of different VAE models to a particular operator.  
 The error on sigma due to the fluctuations of the number of events in the Monte Carlo samples is also computed.  
