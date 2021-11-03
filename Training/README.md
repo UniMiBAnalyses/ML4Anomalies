@@ -1,4 +1,6 @@
 # Training the model
+Here is the [link](https://drive.google.com/drive/folders/1u2WdaWjtUwz9sqsxtInMSyuErn36t8CD?usp=sharing) to the ntuples used for the training and testing of the model.
+
 
 ## training.py 
 Trains the model and saves the trained encoder and the VAE model, together with a .csv file containing the values of the losses per epoch.  
