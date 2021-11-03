@@ -2,13 +2,13 @@
 Here is the [link](https://drive.google.com/drive/folders/1u2WdaWjtUwz9sqsxtInMSyuErn36t8CD?usp=sharing) to the ntuples used for the training and testing of the model.
 
 
-## PlotVariables.py
+## plotVariables.py
 Plots the samples (before any preprocessing operation).
 
-## PlotTrainingLoss.py
+## plotTrainingLoss.py
 Uploads and plots the loss per epoch computed and saved during the training, as a function of the number of the epoch.
 
-## PlotOUTVsIN.py
+## plotOUTVsIN.py
 Plots the input and output SM test distributions and the latent distributions. To do so, the data are splitted and scaled as in the training. The trained VAE model and the encoder are uploaded and used to produce the output and latent distributions, respectively:
 ```python
 model = tf.keras.models.load_model('VAEmodel_name')
@@ -23,7 +23,7 @@ axes[i][j].hist(X_test[0:,nvar],bins=500, weights = wxtest, range=[-0.1,1.2],his
 axes[i][j].hist(out[0:,nvar],bins=500, weights = wxtest, range=[-0.1,1.2],histtype="step",color="red",alpha=0.6,linewidth=2,label="output")
 ```
 
-## PlotCombinedSamples.py
+## plotCombinedSamples.py
 Plots:
 * Correlation matrix of the input variables
 * Value of the loss function for the single events
@@ -95,7 +95,7 @@ myloss =np.asarray(myloss)
 ```
 
 
-## PlotVariabiliLossTail.py
+## plotVariabiliLossTail.py
 Plots variables that show high reconstruction error: indeed, the Mean Squared Error between input and output is computed. The events that show an MSE value which is larger than a threshold value are selected and plotted
 
 
@@ -107,3 +107,13 @@ The efficiencies are computed as:
 
 where *sum* stands for the sum of the weights of all the SM (BSM) events, while *sum* * stands for sum of the weights of the BSM=SM+EFT events whose loss exceeds a chosen threshold value (cut)
 
+
+## plotSigma.py
+This script employs the losses and weights computed by means of the loss_per_batch class and plots the loss function, computes the significance sigma and the minimum value of the wilson coefficient for which the VAE model is sensitive to the EFT operator.  
+
+First, the weights need to be correctly normalized (note that the weights taken as an input are expected to be neither scaled by a normalization factor nor scaled by the wilson coefficients yet). The correct normalization of the events is given by the previously described factor (normSM, normLIN, normQUAD), that is to be multiplied to the weights of the events (together with the cW and cW^2 coefficients in the cases of the EFT events).  
+
+The significance sigma is computed as the number of EFT (LIN + QUAD) events whose loss is bigger than a selected threshold, divided by the square root of the number of SM events above the same threshold. This is the chosen figure of merit to compare the sensitivity of different VAE models to a particular operator.  
+The error on sigma due to the fluctuations of the number of events in the Monte Carlo samples is also computed.  
+
+It's also possible to compute the minimum value of the wilson coefficient for which the analysis is sensitive to the EFT operator (where sensitivity is defined as having at least one value of sigma>3).
