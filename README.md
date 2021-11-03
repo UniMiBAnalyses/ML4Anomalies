@@ -1,9 +1,9 @@
 # ML4Anomalies
 
-**Data samples used:**  
+### Data samples used:  
 Can be found [here](https://drive.google.com/drive/folders/1u2WdaWjtUwz9sqsxtInMSyuErn36t8CD?usp=sharing).  
 
-**Some useful references on the topic:**  
+### Some useful references on the topic:   
 
 * On VAEs:
     * https://keras.io/examples/generative/vae/
@@ -15,7 +15,7 @@ Can be found [here](https://drive.google.com/drive/folders/1u2WdaWjtUwz9sqsxtInM
 * On VAEs for anomaly detection in HEP:
     * https://arxiv.org/pdf/1312.6114.pdf
 
-**Some additional tests for anomaly detection:**
+### Some additional tests for anomaly detection:  
 
 Keras:
 Generic Keras setup and playground  
