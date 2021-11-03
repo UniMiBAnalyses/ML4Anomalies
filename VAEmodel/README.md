@@ -37,27 +37,9 @@ self.add_loss(kl_loss)
 ```
 Note that the KLD is multiplied by a scaling factor << 1, which means that reconstruction is favoured over regularization during the training. This factor was chosen as the one that gave the smallest value of the total training loss.
 
-
-
-
 ## VAE_model.py
 This model is built as the previous one. However, the structure of encoder and decoder is changed: the number and size of the layers is different than in the previous case.
 
 ## VAE_new_model.py
 In this model, encoder and decoder are not defined as separate objects: indeed, the Variational AutoEncoder class (tf.keras.Model) comprises several layers including those that form the encoder and those forming the decoder.  
 This allows for a straightforward access to the layers ot the model (e.g. by means of the model.get_layer method - see testSHAP4AE_new.py for an example of its use -, that would otherwise only allow to access either the encoder or the decoder, which in VAE_model_extended.py are set as layer objects themselves).
-
-## test_AE.py
-This allows for building and training an AE model.
-
-## test_VAE.py
-This allows for building and training a VAE model.
-
-## test_VAE_class.py
-This defines the VAE model as a class and subsequently trains it.
-
-## test_VAE_weights.py
-This adds weights for training and evaluation.
-
-## test_loadVAE.py
-This employs the tf.keras.models.load_model method to upload a trained VAE model and a trained encoder to plot the output and latent distributions, respectively.
