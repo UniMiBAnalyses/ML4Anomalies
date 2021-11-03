@@ -1,7 +1,4 @@
 # Plots
-Here is the [link](https://drive.google.com/drive/folders/1u2WdaWjtUwz9sqsxtInMSyuErn36t8CD?usp=sharing) to the ntuples used for the training and testing of the model.
-
-
 ## plotVariables.py
 Plots the samples (before any preprocessing operation).
 
