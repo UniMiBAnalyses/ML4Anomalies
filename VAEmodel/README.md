@@ -46,3 +46,11 @@ Another possible model structure. Besides having different number and size of la
 ## VAE_new_model.py
 In this model, encoder and decoder are not defined as separate objects: indeed, the Variational AutoEncoder class (tf.keras.Model) comprises several layers including those that form the encoder and those forming the decoder.  
 This allows for a straightforward access to the layers ot the model (e.g. by means of the model.get_layer method - see testSHAP4AE_new.py for an example of its use -, that would otherwise only allow to access either the encoder or the decoder, which in VAE_model_extended.py are set as layer objects themselves).
+
+## VAE_model_losses.py
+This model allows for keeping track of the values of the losses (MSE, KLD and total) per epoch during the training. To retrieve these values, the following lines should be added to the script that runs the training:
+```python
+np.savetxt(loss_name, hist.history["loss"], delimiter=',')
+np.savetxt(mse_name, hist.history['reconstruction_loss'], delimiter=',')
+np.savetxt(kld_name, hist.history['kl_loss'], delimiter=',')
+```
