@@ -81,21 +81,23 @@ weight_test = np.concatenate((w_test, wx_test))
 
 t = MinMaxScaler()
 t.fit(X_train)
-#X_test=t.transform(X_test)
+X_test=t.transform(X_test)
 All_test = t.transform(All_test)
 All_BSM_test = t.transform(All_BSM_test)
 
 model = tf.keras.models.load_model('vae_test_noSampling')
-output = model.predict(All_BSM_test)
-rec_err = np.linalg.norm(All_BSM_test - output, axis = 1)
-#plt.hist(rec_err)
-#plt.show()
-idx = list(rec_err).index(max(rec_err))
+#output = model.predict(All_BSM_test)
+#rec_err = np.linalg.norm(All_BSM_test - output, axis = 1)
+output = model.predict(X_test)
+rec_err = np.linalg.norm(X_test - output, axis = 1)
+plt.hist(rec_err)
+plt.show()
+#idx = list(rec_err).index(max(rec_err))
 worse_variables = []
 shaptop5features = pd.DataFrame(data = None)
 for idx in range(len(rec_err)):
-       if rec_err[idx] > 1.22:
-              df = pd.DataFrame(data = All_BSM_test[idx], index = All.columns, columns = ['reconstruction_loss'])
+       if rec_err[idx] > 0.7:#1.22:
+              df = pd.DataFrame(data = X_test[idx]-output[idx], index = All.columns, columns = ['reconstruction_loss'])
               #print(sort_by_absolute(df, idx).T)
               top_5_features = sort_by_absolute(df, idx).iloc[:5,:]              
               print(top_5_features.T)
@@ -103,7 +105,9 @@ for idx in range(len(rec_err)):
               #print(model.summary())
               shaptop5features[str(idx)] = pd.Series(top_5_features.T.columns.to_numpy())
 shaptop5features = shaptop5features.T
-print(shaptop5features)
+for i in range(5):
+    print("**** Variable counts in column", i)
+    print(shaptop5features[i].value_counts())
 
 
 """
