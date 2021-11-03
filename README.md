@@ -22,6 +22,9 @@ Anomaly detection for de/dx:
 Some tests for anomaly detection for de/dx based analysis
 * https://github.com/amassiro/ML4Anomalies
 
+**Data samples used**  
+Can be found [here](https://drive.google.com/drive/folders/1u2WdaWjtUwz9sqsxtInMSyuErn36t8CD?usp=sharing).
+
 
 ## Contents:
 ### VAEmodel 
