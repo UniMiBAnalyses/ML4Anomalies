@@ -59,5 +59,49 @@ Note that both the VAE and the DNN are trained on a sample which comprises both 
  
 
 ## VAE_DNN_model_SeparateSamples.py (VAE_DNN_training_SeparateSamples.py)
-The architecture of the model is similar to that of the previous one; however, this model allows for training the VAE part only on the SM sample and the DNN part on both SM and BSM events. Indeed, the aim is that of training the VAE part only for SM reconstruction and the DNN part to discriminate between SM and BSM events.
+The architecture of the model is similar to that of the previous one; however, this model allows for training the VAE part only on the SM sample and the DNN part on both SM and EFT events. Indeed, the aim is that of training the VAE part only for SM reconstruction and the DNN part to discriminate between SM and BSM events.
 
+This is achieved by giving as an input to the VAE model a list of two objects:
+```python
+hist = vae.fit([SM_only_train,X_train], y_train,validation_data=([SM_only_test,X_test],y_test), epochs=epochs, batch_size = batchsize, callbacks=[es,mc])
+```
+where the first entry of the input data (namely, SM_only_train) contains the SM sample on which the VAE is trained, while the second entry (namely, X_train) contains SM and BSM events used for the classification. Indeed, the losses computed on SM are added to the model, to be minimized by adam, while the losses computed on BSM (SM + EFT) are passed to the classifier.
+
+```python
+# within the definition of the Variational AutoEncoder class:
+
+#for SM only
+z_mean, z_log_var, z = self.encoder(inputs[0])
+reconstructed = self.decoder(z)   
+
+#SM+BSM 
+z_mean_BSM, z_log_var_BSM, z_BSM = self.encoder(inputs[1])
+reconstructed_BSM = self.decoder(z_BSM)
+        
+
+# losses computed on SM are added to the model, to be minimized by adam        
+mse = tf.keras.losses.MeanSquaredError()
+mseLoss = mse(inputs[0], reconstructed)*1. #was 1. by deafult        
+self.add_loss(mseLoss) 
+
+kl_loss = - 0.5 * tf.reduce_mean(
+       z_log_var - tf.square(z_mean) - tf.exp(z_log_var) + 1)
+kl_loss= kl_loss/1000000. # was 1000000.
+self.add_loss(kl_loss)  
+        
+        
+# losses computed on BSM are passed to the classifier
+recoLoss = math_ops.squared_difference(reconstructed_BSM, inputs[1])
+recoLoss = tf.keras.backend.mean(recoLoss, axis = -1)       
+newKLLoss = tf.keras.backend.mean(- 0.5 *(z_log_var_BSM - tf.square(z_mean_BSM) - tf.exp(z_log_var_BSM) + 1), axis = -1)
+totLoss = tf.stack([recoLoss,newKLLoss],axis=1)
+myOutput = self.classifier(totLoss)       
+```
+
+
+During the trainig an Early Stopping is applied.
+```python
+es = EarlyStopping(monitor='val_auc', mode='max', verbose=1,patience=20)
+mc = tf.keras.callbacks.ModelCheckpoint('best_model_OSWW_and_QCD.h5', monitor='val_auc', mode='max', verbose=1, save_best_only=True)
+hist = vae.fit([SM_only_train,X_train], y_train,validation_data=([SM_only_test,X_test],y_test), epochs=epochs, batch_size = batchsize, callbacks=[es,mc]) 
+```
