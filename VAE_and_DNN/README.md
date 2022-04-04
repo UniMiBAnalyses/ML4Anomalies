@@ -3,7 +3,7 @@ This folder contains two models (and the related scripts for training) whose arc
 
 
 The following scheme represents the model **VAE_and_DNN.py**.
-![Alt Text](https://github.com/GiuliaLavizzari/ML4Anomalies/blob/50f243532b371ced4eab8769c03343e20e59d69e/VAEmodel/VAE_ML4Anomalies.png)
+![Alt Text](https://github.com/GiuliaLavizzari/ML4Anomalies/blob/newdocu/VAE_and_DNN/VAE_semisupervised_model.png)
 
 ## VAE_model_extended.py
 This VAE model is built via subclassing (a guide for building models via subclassing in TensorFlow can be found [here](https://www.tensorflow.org/guide/keras/custom_layers_and_models)).  
