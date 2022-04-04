@@ -91,6 +91,7 @@ class Decoder(layers.Layer):
         output =self.dense_output(active_layer5)
         return self.decoder_active_output(output)
 
+    
 #class recoLoss(layers.Layer):
 #    """Computes the reco loss and return it, not trainable."""
 #
