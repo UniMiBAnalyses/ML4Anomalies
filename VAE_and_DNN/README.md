@@ -55,17 +55,17 @@ self.add_loss(kl_loss)
 
 
 **Training:**
-Note that both the VAE and the DNN are trained on a sample which comprises both SM and BSM events.
+Note that both the VAE and the DNN are trained on a sample which comprises both SM and EFT events.
  
 
 ## VAE_DNN_model_SeparateSamples.py (VAE_DNN_training_SeparateSamples.py)
 The architecture of the model is similar to that of the previous one; however, this model allows for training the VAE part only on the SM sample and the DNN part on both SM and EFT events. Indeed, the aim is that of training the VAE part only for SM reconstruction and the DNN part to discriminate between SM and BSM events.
 
-This is achieved by giving as an input to the VAE model a list of two objects:
+This is achieved by giving as an input to the model a list of two objects:
 ```python
 hist = vae.fit([SM_only_train,X_train], y_train,validation_data=([SM_only_test,X_test],y_test), epochs=epochs, batch_size = batchsize, callbacks=[es,mc])
 ```
-where the first entry of the input data (namely, SM_only_train) contains the SM sample on which the VAE is trained, while the second entry (namely, X_train) contains SM and BSM events used for the classification. Indeed, the losses computed on SM are added to the model, to be minimized by adam, while the losses computed on BSM (SM + EFT) are passed to the classifier.
+where the first entry of the input data (namely, SM_only_train) contains the SM sample on which the VAE is trained, while the second entry (namely, X_train) contains SM and EFT events used by the DNN for the classification. Indeed, the losses computed on SM are added to the model, to be minimized by adam, while the losses computed on BSM (SM + EFT) are passed to the classifier:
 
 ```python
 # within the definition of the Variational AutoEncoder class:
@@ -99,7 +99,7 @@ myOutput = self.classifier(totLoss)
 ```
 
 
-During the trainig an Early Stopping is applied.
+Note also that during the trainig Keras Model Checkpoint and Early Stopping are used: the monitored metric based on which the training is stopped and the weights are saved is the AUC value (the model is thus chosen as the best in terms of discrimination).
 ```python
 es = EarlyStopping(monitor='val_auc', mode='max', verbose=1,patience=20)
 mc = tf.keras.callbacks.ModelCheckpoint('best_model_OSWW_and_QCD.h5', monitor='val_auc', mode='max', verbose=1, save_best_only=True)
