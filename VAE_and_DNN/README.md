@@ -5,8 +5,33 @@ This folder contains two models (and the related scripts for training) whose arc
 The following scheme represents the model **VAE_and_DNN.py**.
 ![Alt Text](https://github.com/GiuliaLavizzari/ML4Anomalies/blob/newdocu/VAE_and_DNN/VAE_semisupervised_model.png)
 
-## VAE_model_extended.py
-This VAE model is built via subclassing (a guide for building models via subclassing in TensorFlow can be found [here](https://www.tensorflow.org/guide/keras/custom_layers_and_models)).  
+## VAE_DNN_model.py (VAE_DNN_training.py)
+This VAE model is built via subclassing. The model comprises a simple VAE, made of an Encoder and a Decoder just as the models used so far, and a DNN that serves as a classifier. As encoder and decoder, the classifier is set as a separate object which inherits from the tf.keras.layers.Layer class. When encoder, decoder, and classifier are combined into the end-to-end model for training, the RECO and KLD losses are computed and can be given as inputs to the classifier. The training of the classifier happens through the minimization of a Binary Cross Entropy loss function.
+
+**Classifier**
+The classifier can take three different inputs, based on which it discriminates between SM and BSM events:
+- The input data:
+```python
+myOutput = self.classifier(z)
+```
+- The value of the reconstruction loss (MSE) between input and output of the VAE part, computed for each event:
+```python
+recoLoss = math_ops.squared_difference(reconstructed, inputs)
+recoLoss = tf.keras.backend.mean(recoLoss, axis = -1) 
+dim_batch =  reconstructed.get_shape().as_list()[0]   
+recoLoss = tf.expand_dims(recoLoss,-1)
+myOutput = self.classifier(recoLoss)
+```
+- The value of a bidimensional loss that comprises both reconstruction (MSE) and regularization (KLD) loss, computed for each event:
+```python
+recoLoss = math_ops.squared_difference(reconstructed, inputs)
+recoLoss = tf.keras.backend.mean(recoLoss, axis = -1) 
+dim_batch =  reconstructed.get_shape().as_list()[0]   
+recoLoss = tf.expand_dims(recoLoss,-1)
+newKLLoss = tf.keras.backend.mean(- 0.5 *(z_log_var - tf.square(z_mean) - tf.exp(z_log_var) + 1), axis = -1)
+totLoss = tf.stack([recoLoss,newKLLoss],axis=1)
+myOutput = self.classifier(totLoss)
+```
 
 **Structure of the model:**  
 The encoder and decoder are set as two separate objects, each of which inherits from the tf.keras.layers.Layer class. The two of them are put together to create the variational autoencoder, which inherits from the tf.keras.Model class. Encoder and decoder in turn comprise several layers, the dimension of which can be set by changing the parameters of the model during the training. Each layer employs a LeakyReLU as an activation function. Note that the input data (and thus the outputs of the VAE) are not bound between 0 and 1, thus the activation function of the last layer of the decoder (which direcly gives the output of the model) shouldn't be bound between 0 and 1. See the Training folder for more information on the scaling of the data.  
