@@ -41,9 +41,10 @@ Contains tools to plot input and output variables, latent variables, correlation
 ### SHAP  
 Contains tools to understand which features are contributing the most to the loss of the model.
 
+### VAE and DNN:
+Contains a new version of the model, comprised of a simple VAE together with a DNN that serves as a classifier for SM - EFT discrimination
+
 ### Trained models:
 vae_batch16_newModelDimenstions_MinMaxScaler_20_10_7_3_100  
 vae_test_newModelDimenstions_MinMaxScaler_20_10_7_3_100    
 vae_test_newModelDimenstions_MinMaxScaler_30_20_10_5_100 
-
-
