@@ -8,6 +8,7 @@ The following scheme represents the model **VAE_and_DNN.py**.
 ## VAE_DNN_model.py (VAE_DNN_training.py)
 This VAE model is built via subclassing. The model comprises a simple VAE, made of an Encoder and a Decoder just as the models used so far, and a DNN that serves as a classifier. As encoder and decoder, the classifier is set as a separate object which inherits from the tf.keras.layers.Layer class. When encoder, decoder, and classifier are combined into the end-to-end model for training, the RECO and KLD losses are computed and can be given as inputs to the classifier. The training of the classifier happens through the minimization of a Binary Cross Entropy loss function.
 
+
 **Classifier**
 
 The classifier can take three different inputs, based on which it discriminates between SM and BSM events:
@@ -53,20 +54,10 @@ self.add_loss(kl_loss)
 ```
 
 
-## VAE_model2.py
-This model is built as the previous one. However, the structure of encoder and decoder is changed: the number and size of the layers is different than in the previous case.
+**Training:**
+Note that both the VAE and the DNN are trained on a sample which comprises both SM and BSM events.
+ 
 
-## VAE_model3.py
-Another possible model structure. Besides having different number and size of layers (128-64-32-latent-32-64-128), this model also employs a weight initializer (tf.keras.initializers.he_normal()) and uses a linear function as the activation function on the last layer of the decoder.
+## VAE_DNN_model_SeparateSamples.py (VAE_DNN_training_SeparateSamples.py)
+The architecture of the model is similar to that of the previous one; however, this model allows for training the VAE part only on the SM sample and the DNN part on both SM and BSM events. Indeed, the aim is that of training the VAE part only for SM reconstruction and the DNN part to discriminate between SM and BSM events.
 
-## VAE_new_model.py
-In this model, encoder and decoder are not defined as separate objects: indeed, the Variational AutoEncoder class (tf.keras.Model) comprises several layers including those that form the encoder and those forming the decoder.  
-This allows for a straightforward access to the layers ot the model (e.g. by means of the model.get_layer method - see testSHAP4AE_new.py for an example of its use -, that would otherwise only allow to access either the encoder or the decoder, which in VAE_model_extended.py are set as layer objects themselves).
-
-## VAE_model_losses.py
-This model allows for keeping track of the values of the losses (MSE, KLD and total) per epoch during the training. To retrieve these values, the following lines should be added to the script that runs the training:
-```python
-np.savetxt(loss_name, hist.history["loss"], delimiter=',')
-np.savetxt(mse_name, hist.history['reconstruction_loss'], delimiter=',')
-np.savetxt(kld_name, hist.history['kl_loss'], delimiter=',')
-```
