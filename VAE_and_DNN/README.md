@@ -58,7 +58,7 @@ self.add_loss(kl_loss)
 Note that both the VAE and the DNN are trained on a sample which comprises both SM and EFT events.
  
 
-## VAE_DNN_model_SeparateSamples.py (VAE_DNN_training_SeparateSamples.py)
+## VAE_separate.py (VAE_separate_training_forOSWW.py)
 The architecture of the model is similar to that of the previous one; however, this model allows for training the VAE part only on the SM sample and the DNN part on both SM and EFT events. Indeed, the aim is that of training the VAE part only for SM reconstruction and the DNN part to discriminate between SM and BSM events.
 
 This is achieved by giving as an input to the model a list of two objects:
