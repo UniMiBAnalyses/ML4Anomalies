@@ -2,7 +2,7 @@
 This folder contains two models (and the related scripts for training) whose architecture comprises a Variational AutoEncoder and a DNN which serves as a classifier. The aim is that of training the model not only to reconstruct a SM sample, but also for discrimination.
 
 
-The following scheme represents the model **VAE_and_DNN.py**.
+The following scheme represents the model **VAE_DNN_model.py**.
 ![Alt Text](https://github.com/GiuliaLavizzari/ML4Anomalies/blob/newdocu/VAE_and_DNN/VAE_semisupervised_model.png)
 
 ## VAE_DNN_model.py (VAE_DNN_training.py)
