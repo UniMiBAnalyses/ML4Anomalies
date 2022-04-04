@@ -35,7 +35,7 @@ myOutput = self.classifier(totLoss)
 
 
 **Loss function:**  
-The model is trained by means of the Adam optimizer. The loss function considered for the training comprises a discrimination term, the Binary Cross Entropy, and the usual MSE and KLD which are added by means of the add_loss method.
+The model is trained by means of the Adam optimizer. The loss function considered for the training comprises a discrimination term, the Binary Cross Entropy, and the usual MSE and KLD which are added to the model by means of the add_loss method.
 ```python
 # VAE_DNN_training.py
 vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005), loss="binary_crossentropy",metrics = [tf.keras.metrics.BinaryAccuracy()])
