@@ -11,7 +11,7 @@ from tensorflow.keras.callbacks import EarlyStopping
 
 #taking the model
 #from VAE_model_extended_moreDKL import *
-from VAE_separateT import *
+from VAE_separate import *
 #from testDNN import *
 from matplotlib import pyplot as plt
 
