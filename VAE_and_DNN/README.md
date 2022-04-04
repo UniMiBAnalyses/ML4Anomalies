@@ -40,7 +40,7 @@ The model is trained by means of the Adam optimizer. The loss function considere
 # VAE_DNN_training.py
 vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005), loss="binary_crossentropy",metrics = [tf.keras.metrics.BinaryAccuracy()])
 
-# VAE_DNN_training.py 
+# VAE_DNN_model.py 
 # within the definition of the class VariationalAutoEncoder
 
 mse = tf.keras.losses.MeanSquaredError()
