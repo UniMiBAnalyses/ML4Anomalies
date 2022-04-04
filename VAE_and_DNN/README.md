@@ -39,7 +39,7 @@ The model is trained by means of the Adam optimizer. The loss function considere
 # VAE_DNN_training.py
 vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005), loss="binary_crossentropy",metrics = [tf.keras.metrics.BinaryAccuracy()])
 
-# vae_model_extended.py 
+# VAE_DNN_training.py 
 # within the definition of the class VariationalAutoEncoder
 
 mse = tf.keras.losses.MeanSquaredError()
@@ -51,7 +51,7 @@ kl_loss = - 0.5 * tf.reduce_mean(
 kl_loss= kl_loss/100000000. # was 1000000.
 self.add_loss(kl_loss)  
 ```
-Note that the KLD is multiplied by a scaling factor << 1, which means that reconstruction is favoured over regularization during the training. This factor was chosen as the one that gave the smallest value of the total training loss.
+
 
 ## VAE_model2.py
 This model is built as the previous one. However, the structure of encoder and decoder is changed: the number and size of the layers is different than in the previous case.
