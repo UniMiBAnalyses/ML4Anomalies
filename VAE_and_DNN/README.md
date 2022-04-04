@@ -9,6 +9,7 @@ The following scheme represents the model **VAE_and_DNN.py**.
 This VAE model is built via subclassing. The model comprises a simple VAE, made of an Encoder and a Decoder just as the models used so far, and a DNN that serves as a classifier. As encoder and decoder, the classifier is set as a separate object which inherits from the tf.keras.layers.Layer class. When encoder, decoder, and classifier are combined into the end-to-end model for training, the RECO and KLD losses are computed and can be given as inputs to the classifier. The training of the classifier happens through the minimization of a Binary Cross Entropy loss function.
 
 **Classifier**
+
 The classifier can take three different inputs, based on which it discriminates between SM and BSM events:
 - The input data:
 ```python
