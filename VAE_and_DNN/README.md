@@ -19,7 +19,6 @@ myOutput = self.classifier(z)
 ```python
 recoLoss = math_ops.squared_difference(reconstructed, inputs)
 recoLoss = tf.keras.backend.mean(recoLoss, axis = -1) 
-dim_batch =  reconstructed.get_shape().as_list()[0]   
 recoLoss = tf.expand_dims(recoLoss,-1)
 myOutput = self.classifier(recoLoss)
 ```
@@ -27,7 +26,6 @@ myOutput = self.classifier(recoLoss)
 ```python
 recoLoss = math_ops.squared_difference(reconstructed, inputs)
 recoLoss = tf.keras.backend.mean(recoLoss, axis = -1) 
-dim_batch =  reconstructed.get_shape().as_list()[0]   
 recoLoss = tf.expand_dims(recoLoss,-1)
 newKLLoss = tf.keras.backend.mean(- 0.5 *(z_log_var - tf.square(z_mean) - tf.exp(z_log_var) + 1), axis = -1)
 totLoss = tf.stack([recoLoss,newKLLoss],axis=1)
