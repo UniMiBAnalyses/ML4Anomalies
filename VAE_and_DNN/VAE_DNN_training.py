@@ -12,17 +12,17 @@ from tensorflow.keras import layers
 #taking the model
 from VAE_DNN_model import *
 KIND = sys.argv[2]
-oper = sys.argv[3]
 # A = latent space
 # B = loss 1D (Reco)
 # C = loss 2D (Reco+KLD)
+oper = sys.argv[3]
 
 #from matplotlib import pyplot as plt
 
 import ROOT
 #ROOT.ROOT.EnableImplicitMT()
 
-path_to_ntuple = "/gwpool/users/glavizzari/Downloads/ntuplesBSM"
+path_to_ntuple = "../"
 
 
 #
@@ -42,17 +42,18 @@ dfBSM2 = ROOT.RDataFrame("SSWW_"+str(oper)+"_LI",path_to_ntuple+"/ntuple_SSWW_"+
 dfBSM2 = dfBSM2.Filter(kinematicFilter)
 
 np_SM = dfSM.AsNumpy(pd_variables)
-wSM = dfSM.AsNumpy("w")
+wSM = dfSM.AsNumpy(["w"])
 npd =pd.DataFrame.from_dict(np_SM)
 wpdSM = pd.DataFrame.from_dict(wSM)
 
 np_BSM = dfBSM.AsNumpy(pd_variables)
-wBSM = dfBSM.AsNumpy("w")
+wBSM = dfBSM.AsNumpy(["w"])
 npd_BSM =pd.DataFrame.from_dict(np_BSM)
 wpdBSM = pd.DataFrame.from_dict(wBSM)
-
+#just for a check:
+dfBSM2 = dfBSM
 np_BSM2 = dfBSM2.AsNumpy(pd_variables)
-wBSM2 = dfBSM2.AsNumpy("w")
+wBSM2 = dfBSM2.AsNumpy(["w"])
 npd_BSM2 =pd.DataFrame.from_dict(np_BSM2)
 wpdBSM2 = pd.DataFrame.from_dict(wBSM2)
 
