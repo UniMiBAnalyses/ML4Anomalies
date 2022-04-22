@@ -50,8 +50,7 @@ np_BSM = dfBSM.AsNumpy(pd_variables)
 wBSM = dfBSM.AsNumpy(["w"])
 npd_BSM =pd.DataFrame.from_dict(np_BSM)
 wpdBSM = pd.DataFrame.from_dict(wBSM)
-#just for a check:
-dfBSM2 = dfBSM
+
 np_BSM2 = dfBSM2.AsNumpy(pd_variables)
 wBSM2 = dfBSM2.AsNumpy(["w"])
 npd_BSM2 =pd.DataFrame.from_dict(np_BSM2)
