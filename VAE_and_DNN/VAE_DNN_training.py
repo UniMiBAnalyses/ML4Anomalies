@@ -6,6 +6,7 @@ import sys
 import numpy
 import pandas as pd
 import tensorflow as tf
+from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras import layers
 
 
@@ -113,10 +114,13 @@ nameExtenstion = str(intermediate_dim)+"_"+str(input_dim)+"_"+str(half_input)+"_
 vae = VariationalAutoEncoder(original_dim, intermediate_dim,input_dim,half_input,latent_dim)  
 #vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005),  loss=tf.keras.losses.MeanSquaredError())
 #vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005),run_eagerly=True, loss="binary_crossentropy",metrics = [tf.keras.metrics.BinaryAccuracy()])
-vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005), loss="binary_crossentropy",metrics = [tf.keras.metrics.BinaryAccuracy()])
+vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005), loss="binary_crossentropy",metrics = [tf.keras.metrics.BinaryAccuracy(),tf.keras.metrics.AUC()])
+es = EarlyStopping(monitor='val_auc', mode='max', verbose=1,patience=20)
+mc = tf.keras.callbacks.ModelCheckpoint('best_model.tf', save_format="tf", monitor='val_auc', mode='max', verbose=1, save_best_only=True)
 
-hist = vae.fit(X_train, y_train,validation_data=(X_test,y_test), epochs=epochs, batch_size = batchsize) 
+hist = vae.fit(X_train, y_train,validation_split=0.2, epochs=epochs, batch_size = batchsize, callbacks=[es,mc]) 
 #print "new model: ", vae.summary()
+vae.load_weights("best_model.tf")
 encoderDecoder =  EncoderDecoder(original_dim,intermediate_dim,input_dim,half_input,latent_dim)
 reco = encoderDecoder.predict(X_test)
 #encoder = LatentSpace(intermediate_dim,input_dim,half_input,latent_dim)
