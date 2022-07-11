@@ -28,7 +28,7 @@ ROOT.ROOT.EnableImplicitMT()
 #       'met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
 #       'ptl2', 'ptll']#,'phij1', 'phij2', 'w']
 #kinematicFilter = "ptj1 > 30 && ptj2 >30 && deltaetajj>2 && mjj>200"
-kinematicFilter = "ptj1 > 30 && ptj2 >30 && mjj>200"
+kinematicFilter = "ptj1 > 30 && abs(etaj1-etaj2) > 2. && ptj2 >30 && mjj>200"
 ntuple_location = "../ntuples4Momentum/"
 dfSM = ROOT.RDataFrame("SSWW_SM",ntuple_location+"ntuple_SSWW_SM.root")
 dfSM = dfSM.Filter(kinematicFilter)
@@ -97,10 +97,10 @@ epochs = 20 #80
 batchsize=64 #32
 nameExtenstion = str(intermediate_dim)+"_"+str(input_dim)+"_"+str(half_input)+"_"+str(latent_dim)+"_"+str(epochs)+"_"+str(batchsize)
 vae = VariationalAutoEncoder(original_dim,intermediate_dim,input_dim,half_input,latent_dim)  
-#vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005),  loss=tf.keras.losses.MeanSquaredError())
-#vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005),run_eagerly=True, loss="binary_crossentropy",metrics = [tf.keras.metrics.BinaryAccuracy()])
-#vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005), loss_weights=[0.1],loss="binary_crossentropy",metrics = [tf.keras.metrics.BinaryAccuracy()])
-vae.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0005),loss="binary_crossentropy",metrics = [tf.keras.metrics.BinaryAccuracy()])
+#vae.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),  loss=tf.keras.losses.MeanSquaredError())
+#vae.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),run_eagerly=True, loss="binary_crossentropy",metrics = [tf.keras.metrics.BinaryAccuracy()])
+#vae.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005), loss_weights=[0.1],loss="binary_crossentropy",metrics = [tf.keras.metrics.BinaryAccuracy()])
+vae.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),loss="binary_crossentropy",metrics = [tf.keras.metrics.BinaryAccuracy()])
 hist = vae.fit(X_train, y_train,validation_data=(X_test,y_test), epochs=epochs, batch_size = batchsize) 
 #print "new model: ", vae.summary()
 encoderDecoder =  EncoderDecoder(original_dim,intermediate_dim,input_dim,half_input,latent_dim)
