@@ -38,14 +38,14 @@ dfBSM = dfBSM.Filter(kinematicFilter)
 np_SM = dfSM.AsNumpy()
 wSM = dfSM.AsNumpy(["w"])
 npd =pd.DataFrame.from_dict(np_SM)
-npd.drop('w',axis='columns', inplace=True)
+npd.drop(['w','phil1','phil2',"phij1","phij2"],axis='columns', inplace=True)
 wpdSM = pd.DataFrame.from_dict(wSM)
 npd.info()
 
 np_BSM = dfBSM.AsNumpy()
 wBSM = dfBSM.AsNumpy(["w"])
 npd_BSM =pd.DataFrame.from_dict(np_BSM)
-npd_BSM.drop('w',axis='columns', inplace=True)
+npd_BSM.drop(['w','phil1','phil2',"phij1","phij2"],axis='columns', inplace=True)
 wpdBSM = pd.DataFrame.from_dict(wBSM)
 
 nEntries = 3000000
@@ -55,7 +55,7 @@ wpdSM = wpdSM.head(nEntries)
 wpdBSM = wpdBSM.head(nEntries)
 #to be done for all the pt and mass and met variables
 for vars in ['met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
-       'ptl2', 'ptll']:
+       'ptl2', 'ptll',"Ej1","Ej2","El1","El2"]:
     npd[vars] = npd[vars].apply(numpy.log10)
     npd_BSM[vars] = npd_BSM[vars].apply(numpy.log10)
 
@@ -92,7 +92,7 @@ original_dim = n_inputs
 intermediate_dim = 50 #50 by default
 input_dim = 10 #was 20 in default
 half_input = 7 #was 20 in the newTest
-latent_dim = 3 #tried 7 as well  #was 3 for optimal performance
+latent_dim = 10 #tried 7 as well  #was 3 for optimal performance
 epochs = 20 #80
 batchsize=64 #32
 nameExtenstion = str(intermediate_dim)+"_"+str(input_dim)+"_"+str(half_input)+"_"+str(latent_dim)+"_"+str(epochs)+"_"+str(batchsize)
