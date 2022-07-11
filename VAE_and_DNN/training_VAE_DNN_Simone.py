@@ -15,34 +15,40 @@ from VAE_testDK_Reco_Loss import *
 from matplotlib import pyplot as plt
 
 import ROOT
-#ROOT.ROOT.EnableImplicitMT()
-
+ROOT.ROOT.EnableImplicitMT()
+#RDataFrame = ROOT.RDF.Experimental.Distributed.Spark.RDataFrame
+ 
 
 
 
 #
 # variable from the nutple
 #
-pd_variables = ['deltaetajj', 'deltaphijj', 'etaj1', 'etaj2', 'etal1', 'etal2',
-       'met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
-       'ptl2', 'ptll']#,'phij1', 'phij2', 'w']
-kinematicFilter = "ptj1 > 30 && ptj2 >30 && deltaetajj>2 && mjj>200"
-dfSM = ROOT.RDataFrame("SSWW_SM","../ntuple_SSWW_SM.root")
+#pd_variables = ['deltaetajj', 'deltaphijj', 'etaj1', 'etaj2', 'etal1', 'etal2',
+#       'met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
+#       'ptl2', 'ptll']#,'phij1', 'phij2', 'w']
+#kinematicFilter = "ptj1 > 30 && ptj2 >30 && deltaetajj>2 && mjj>200"
+kinematicFilter = "ptj1 > 30 && ptj2 >30 && mjj>200"
+ntuple_location = "../ntuples4Momentum/"
+dfSM = ROOT.RDataFrame("SSWW_SM",ntuple_location+"ntuple_SSWW_SM.root")
 dfSM = dfSM.Filter(kinematicFilter)
-dfBSM = ROOT.RDataFrame("SSWW_cW_QU","../ntuple_SSWW_cW_QU.root")
+dfBSM = ROOT.RDataFrame("SSWW_cW_QU",ntuple_location+"ntuple_SSWW_cW_QU.root")
 dfBSM = dfBSM.Filter(kinematicFilter)
 
-np_SM = dfSM.AsNumpy(pd_variables)
+np_SM = dfSM.AsNumpy()
 wSM = dfSM.AsNumpy(["w"])
 npd =pd.DataFrame.from_dict(np_SM)
+npd.drop('w',axis='columns', inplace=True)
 wpdSM = pd.DataFrame.from_dict(wSM)
+npd.info()
 
-np_BSM = dfBSM.AsNumpy(pd_variables)
+np_BSM = dfBSM.AsNumpy()
 wBSM = dfBSM.AsNumpy(["w"])
 npd_BSM =pd.DataFrame.from_dict(np_BSM)
+npd_BSM.drop('w',axis='columns', inplace=True)
 wpdBSM = pd.DataFrame.from_dict(wBSM)
 
-nEntries = 300000
+nEntries = 3000000
 npd = npd.head(nEntries)
 npd_BSM = npd_BSM.head(nEntries)
 wpdSM = wpdSM.head(nEntries)
@@ -53,8 +59,8 @@ for vars in ['met', 'mjj', 'mll',  'ptj1', 'ptj2', 'ptl1',
     npd[vars] = npd[vars].apply(numpy.log10)
     npd_BSM[vars] = npd_BSM[vars].apply(numpy.log10)
 
-Y_true = np.full(nEntries,0)
-Y_true_BSM = np.full(nEntries,1)
+Y_true = np.full(npd.shape[0],0)
+Y_true_BSM = np.full(npd_BSM.shape[0],1)
 #concatenating SM and BSM
 samples = np.concatenate((npd,npd_BSM))
 labels = np.concatenate((Y_true,Y_true_BSM))
@@ -87,7 +93,7 @@ intermediate_dim = 50 #50 by default
 input_dim = 10 #was 20 in default
 half_input = 7 #was 20 in the newTest
 latent_dim = 3 #tried 7 as well  #was 3 for optimal performance
-epochs = 100 #80
+epochs = 20 #80
 batchsize=64 #32
 nameExtenstion = str(intermediate_dim)+"_"+str(input_dim)+"_"+str(half_input)+"_"+str(latent_dim)+"_"+str(epochs)+"_"+str(batchsize)
 vae = VariationalAutoEncoder(original_dim,intermediate_dim,input_dim,half_input,latent_dim)  
